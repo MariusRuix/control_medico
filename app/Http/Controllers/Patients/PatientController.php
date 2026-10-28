@@ -83,6 +83,7 @@ class PatientController extends Controller
                 'update' => $user->can(Permission::PatientsManage->value),
                 'delete' => $user->can(Permission::PatientsDelete->value),
                 'manageHistories' => $user->can(Permission::PatientHistoriesManage->value),
+                'consult' => $user->can(Permission::ConsultationsManage->value) && ! $patient->trashed(),
             ],
         ]);
     }

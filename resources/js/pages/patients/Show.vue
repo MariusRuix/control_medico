@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Form, Head, Link } from '@inertiajs/vue3';
-import { Archive, Pencil, TriangleAlert } from '@lucide/vue';
+import { Archive, Pencil, Stethoscope, TriangleAlert } from '@lucide/vue';
+import ConsultationController from '@/actions/App/Http/Controllers/Clinical/ConsultationController';
 import PatientController from '@/actions/App/Http/Controllers/Patients/PatientController';
 import PatientHistories from '@/components/patients/PatientHistories.vue';
 import { Badge } from '@/components/ui/badge';
@@ -17,6 +18,10 @@ import {
 } from '@/components/ui/dialog';
 import { statusBadgeClasses } from '@/lib/agenda';
 import { formatCurrency, formatDate, formatDateTime } from '@/lib/format';
+import {
+    edit as consultationEdit,
+    show as consultationShow,
+} from '@/routes/consultations';
 import { edit, index } from '@/routes/patients';
 import type {
     AppointmentSummary,
@@ -34,7 +39,12 @@ const props = defineProps<{
     appointments: AppointmentSummary[] | null;
     balance: string | null;
     historyTypes: SelectOption[];
-    can: { update: boolean; delete: boolean; manageHistories: boolean };
+    can: {
+        update: boolean;
+        delete: boolean;
+        manageHistories: boolean;
+        consult: boolean;
+    };
 }>();
 
 defineOptions({
@@ -90,7 +100,16 @@ const identification: { label: string; value: () => string | null }[] = [
                 </p>
             </div>
 
-            <div class="flex gap-2">
+            <div class="flex flex-wrap gap-2">
+                <Form
+                    v-if="can.consult"
+                    v-bind="ConsultationController.start.form(patient.id)"
+                    v-slot="{ processing }"
+                >
+                    <Button type="submit" :disabled="processing">
+                        <Stethoscope /> Iniciar consulta
+                    </Button>
+                </Form>
                 <Button v-if="can.update" variant="outline" as-child>
                     <Link :href="edit(patient.id)"
                         ><Pencil /> Editar ficha</Link
@@ -243,13 +262,20 @@ const identification: { label: string; value: () => string | null }[] = [
                                 class="absolute top-1.5 -left-[25px] size-2.5 rounded-full bg-primary"
                             />
                             <div class="flex flex-wrap items-center gap-2">
-                                <p class="text-sm font-medium">
+                                <Link
+                                    :href="
+                                        consultation.is_signed
+                                            ? consultationShow(consultation.id)
+                                            : consultationEdit(consultation.id)
+                                    "
+                                    class="text-sm font-medium hover:underline"
+                                >
                                     {{
                                         formatDateTime(
                                             consultation.consulted_at,
                                         )
                                     }}
-                                </p>
+                                </Link>
                                 <Badge
                                     v-if="!consultation.is_signed"
                                     variant="outline"

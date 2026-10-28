@@ -35,6 +35,7 @@ export type CalendarAppointment = {
         phone: string | null;
     } | null;
     service: { id: number; name: string; color: string | null } | null;
+    consultation: { id: number; is_signed: boolean } | null;
 };
 
 export type CalendarBlock = {

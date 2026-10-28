@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { Link, router } from '@inertiajs/vue3';
-import { CalendarClock, Phone } from '@lucide/vue';
+import { CalendarClock, Phone, Stethoscope } from '@lucide/vue';
 import { computed, ref, watch } from 'vue';
 import AppointmentController from '@/actions/App/Http/Controllers/Agenda/AppointmentController';
+import ConsultationController from '@/actions/App/Http/Controllers/Clinical/ConsultationController';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import {
@@ -21,6 +22,10 @@ import {
     statusBadgeClasses,
     timeOf,
 } from '@/lib/agenda';
+import {
+    edit as consultationEdit,
+    show as consultationShow,
+} from '@/routes/consultations';
 import { show as patientShow } from '@/routes/patients';
 import type { AppointmentStatusDefinition, CalendarAppointment } from '@/types';
 
@@ -31,6 +36,7 @@ const props = defineProps<{
     statuses: Record<string, AppointmentStatusDefinition>;
     canManage: boolean;
     canViewPatients: boolean;
+    canConsult: boolean;
 }>();
 
 const emit = defineEmits<{ edit: [appointment: CalendarAppointment] }>();
@@ -60,6 +66,28 @@ const transitions = computed(() =>
 const canCancel = computed(
     () => status.value?.transitions.includes('cancelada') ?? false,
 );
+const canStart = computed(() =>
+    ['agendada', 'confirmada', 'en_consultorio'].includes(
+        props.appointment?.status ?? '',
+    ),
+);
+
+function startConsultation(): void {
+    if (!props.appointment) {
+        return;
+    }
+
+    router.post(
+        ConsultationController.startFromAppointment.url(props.appointment.id),
+        {},
+        {
+            onStart: () => (processing.value = true),
+            onFinish: () => (processing.value = false),
+            onError: (e) => (errors.value = e),
+        },
+    );
+}
+
 const isFinal = computed(() => (status.value?.transitions.length ?? 0) === 0);
 
 const actionLabels: Record<string, string> = {
@@ -161,6 +189,36 @@ function changeStatus(value: string): void {
                     </Link>
                 </div>
             </dl>
+
+            <div
+                v-if="canConsult && (appointment.consultation || canStart)"
+                class="rounded-lg bg-muted/50 p-3"
+            >
+                <Button v-if="appointment.consultation" class="w-full" as-child>
+                    <Link
+                        :href="
+                            appointment.consultation.is_signed
+                                ? consultationShow(appointment.consultation.id)
+                                : consultationEdit(appointment.consultation.id)
+                        "
+                    >
+                        <Stethoscope />
+                        {{
+                            appointment.consultation.is_signed
+                                ? 'Ver nota médica'
+                                : 'Continuar consulta'
+                        }}
+                    </Link>
+                </Button>
+                <Button
+                    v-else
+                    class="w-full"
+                    :disabled="processing"
+                    @click="startConsultation"
+                >
+                    <Stethoscope /> Iniciar consulta
+                </Button>
+            </div>
 
             <template v-if="canManage && !isFinal">
                 <div v-if="cancelling" class="space-y-2 rounded-lg border p-3">

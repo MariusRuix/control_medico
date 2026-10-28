@@ -46,7 +46,7 @@ final class CalendarQuery
         ['from' => $from, 'to' => $to] = $this->range($view, $date);
 
         $appointments = Appointment::query()
-            ->with(['patient:id,folio,first_name,last_name,second_last_name,phone', 'service:id,name,color'])
+            ->with(['patient:id,folio,first_name,last_name,second_last_name,phone', 'service:id,name,color', 'consultation:id,appointment_id,signed_at'])
             ->where('starts_at', '<', $to)
             ->where('ends_at', '>', $from)
             ->orderBy('starts_at')
@@ -99,6 +99,10 @@ final class CalendarQuery
                 'folio' => $a->patient->folio,
                 'full_name' => $a->patient->full_name,
                 'phone' => $a->patient->phone,
+            ] : null,
+            'consultation' => $a->consultation !== null ? [
+                'id' => $a->consultation->id,
+                'is_signed' => $a->consultation->isSigned(),
             ] : null,
             'service' => $a->service !== null ? [
                 'id' => $a->service->id,

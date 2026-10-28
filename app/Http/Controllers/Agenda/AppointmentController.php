@@ -42,6 +42,7 @@ class AppointmentController extends Controller
                 'manage' => $user->can(Permission::AppointmentsManage->value),
                 'manageBlocks' => $user->can(Permission::SettingsManage->value),
                 'viewPatients' => $user->can(Permission::PatientsView->value),
+                'consult' => $user->can(Permission::ConsultationsManage->value),
             ],
         ]);
     }

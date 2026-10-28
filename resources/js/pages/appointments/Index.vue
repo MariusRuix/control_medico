@@ -38,7 +38,12 @@ const props = defineProps<{
     slotMinutes: number;
     services: AgendaService[];
     statuses: AppointmentStatusDefinition[];
-    can: { manage: boolean; manageBlocks: boolean; viewPatients: boolean };
+    can: {
+        manage: boolean;
+        manageBlocks: boolean;
+        viewPatients: boolean;
+        consult: boolean;
+    };
 }>();
 
 defineOptions({
@@ -276,6 +281,7 @@ function openBlock(block: CalendarBlock | null): void {
         :statuses="statusMap"
         :can-manage="can.manage"
         :can-view-patients="can.viewPatients"
+        :can-consult="can.consult"
         @edit="openEdit"
     />
     <ScheduleBlockDialog

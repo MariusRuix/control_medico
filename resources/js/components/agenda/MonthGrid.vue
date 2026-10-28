@@ -104,9 +104,7 @@ function color(status: string): string {
                             v-if="(byDay.get(day)?.length ?? 0) > MAX_VISIBLE"
                             class="px-1 text-[11px] font-medium text-muted-foreground"
                         >
-                            +{{
-                                (byDay.get(day)?.length ?? 0) - MAX_VISIBLE
-                            }}
+                            +{{ (byDay.get(day)?.length ?? 0) - MAX_VISIBLE }}
                             más
                         </p>
                     </div>

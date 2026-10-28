@@ -88,3 +88,15 @@ Código: `app/Http/Controllers/Patients`, `app/Services/Patients`, `app/Http/Req
 - Bloquear horario (vacaciones, festivos): solo el médico (`settings.manage`).
 
 Código: `app/Http/Controllers/Agenda`, `app/Services/Agenda`, `app/Http/Requests/Agenda`, `resources/js/pages/appointments`, `resources/js/components/agenda`. Pruebas: `tests/Feature/Agenda`.
+
+### Consulta (`/consultations`)
+
+- Se inicia desde la cita ("Iniciar consulta" en la agenda; la cita pasa a _En consultorio_) o desde el expediente para pacientes sin cita.
+- Pantalla de consulta: signos vitales con IMC y clasificación en vivo, nota SOAP, plantillas (llenan solo los campos vacíos) y diagnósticos CIE-10 con autocompletado (uno principal).
+- Panel lateral con alergias críticas, antecedentes, evolución de signos vitales y notas anteriores.
+- Guardado automático (y Ctrl+S); validación de rangos fisiológicos para detectar errores de captura.
+- Firmar: exige evolución (S), plan, diagnóstico principal y que no quede texto de plantilla sin llenar. La nota firmada queda bloqueada y la cita se marca como _Finalizada_.
+- Descartar borrador: la cita regresa a _Confirmada_. Vista de nota firmada lista para imprimir.
+- Solo el médico (`consultations.view` / `consultations.manage`); cada apertura queda en la bitácora.
+
+Código: `app/Http/Controllers/Clinical`, `app/Services/Clinical`, `app/Http/Requests/Clinical`, `resources/js/pages/consultations`, `resources/js/components/clinical`. Pruebas: `tests/Feature/Clinical`.

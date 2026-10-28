@@ -170,3 +170,19 @@
         @apply bg-background text-foreground;
     }
 }
+
+/* Impresión de notas y documentos: solo el contenido de la página. */
+@media print {
+    [data-slot='sidebar'],
+    [data-slot='sidebar-trigger'],
+    [data-slot='sidebar-rail'],
+    [data-print='hide'] {
+        display: none !important;
+    }
+
+    [data-slot='sidebar-inset'] {
+        margin: 0 !important;
+        border: 0 !important;
+        box-shadow: none !important;
+    }
+}

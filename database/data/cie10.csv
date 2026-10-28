@@ -1,0 +1,41 @@
+code,description,chapter
+A09X,Diarrea y gastroenteritis de presunto origen infeccioso,I
+B34.9,"Infección viral, no especificada",I
+E03.9,"Hipotiroidismo, no especificado",IV
+E11.9,Diabetes mellitus tipo 2 sin mención de complicación,IV
+E66.9,"Obesidad, no especificada",IV
+E78.0,Hipercolesterolemia pura,IV
+E78.5,"Hiperlipidemia, no especificada",IV
+F32.9,"Episodio depresivo, no especificado",V
+F41.1,Trastorno de ansiedad generalizada,V
+G43.9,"Migraña, no especificada",VI
+G44.2,Cefalea debida a tensión,VI
+H10.9,"Conjuntivitis, no especificada",VII
+H66.9,"Otitis media, no especificada",VIII
+I10X,Hipertensión esencial (primaria),IX
+J00X,Rinofaringitis aguda (resfriado común),X
+J02.9,"Faringitis aguda, no especificada",X
+J03.9,"Amigdalitis aguda, no especificada",X
+J01.9,"Sinusitis aguda, no especificada",X
+J06.9,"Infección aguda de las vías respiratorias superiores, no especificada",X
+J18.9,"Neumonía, no especificada",X
+J20.9,"Bronquitis aguda, no especificada",X
+J30.4,"Rinitis alérgica, no especificada",X
+J45.9,"Asma, no especificada",X
+K21.9,Enfermedad del reflujo gastroesofágico sin esofagitis,XI
+K29.7,"Gastritis, no especificada",XI
+K30X,Dispepsia,XI
+K59.0,Constipación,XI
+L23.9,"Dermatitis alérgica de contacto, de causa no especificada",XII
+L70.0,Acné vulgar,XII
+M54.5,Lumbago no especificado,XIII
+M79.1,Mialgia,XIII
+N39.0,"Infección de vías urinarias, sitio no especificado",XIV
+N76.0,Vaginitis aguda,XIV
+R05X,Tos,XVIII
+R10.4,Otros dolores abdominales y los no especificados,XVIII
+R50.9,"Fiebre, no especificada",XVIII
+R51X,Cefalea,XVIII
+Z00.0,Examen médico general,XXI
+Z01.4,Examen ginecológico (general) (de rutina),XXI
+Z30.0,Consejo y asesoramiento general sobre la anticoncepción,XXI

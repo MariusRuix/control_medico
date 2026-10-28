@@ -3,6 +3,7 @@ import { Form, Head, Link } from '@inertiajs/vue3';
 import { Archive, Pencil, Stethoscope, TriangleAlert } from '@lucide/vue';
 import ConsultationController from '@/actions/App/Http/Controllers/Clinical/ConsultationController';
 import PatientController from '@/actions/App/Http/Controllers/Patients/PatientController';
+import MedicalFilesPanel from '@/components/files/MedicalFilesPanel.vue';
 import PatientHistories from '@/components/patients/PatientHistories.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -26,6 +27,7 @@ import { edit, index } from '@/routes/patients';
 import type {
     AppointmentSummary,
     ConsultationSummary,
+    MedicalFileItem,
     Patient,
     PatientHistory,
     SelectOption,
@@ -39,11 +41,16 @@ const props = defineProps<{
     appointments: AppointmentSummary[] | null;
     balance: string | null;
     historyTypes: SelectOption[];
+    fileTypes: SelectOption[];
+    files: MedicalFileItem[] | null;
     can: {
         update: boolean;
         delete: boolean;
         manageHistories: boolean;
         consult: boolean;
+        uploadFiles: boolean;
+        viewFiles: boolean;
+        deleteFiles: boolean;
     };
 }>();
 
@@ -319,6 +326,17 @@ const identification: { label: string; value: () => string | null }[] = [
                         </li>
                     </ol>
                 </section>
+
+                <!-- Estudios -->
+                <MedicalFilesPanel
+                    v-if="files !== null"
+                    :patient-id="patient.id"
+                    :files="files"
+                    :types="fileTypes"
+                    :can-upload="can.uploadFiles"
+                    :can-view="can.viewFiles"
+                    :can-delete="can.deleteFiles"
+                />
 
                 <!-- Citas -->
                 <section

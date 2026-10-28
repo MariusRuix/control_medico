@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Services\Clinical;
 
 use App\Enums\PatientHistoryType;
+use App\Enums\MedicalFileType;
+use App\Http\Resources\MedicalFileResource;
 use App\Http\Resources\MedicationOptionResource;
 use App\Http\Resources\PatientHistoryResource;
 use App\Models\Consultation;
@@ -56,6 +58,10 @@ final class ConsultationWorkspace
             'previous' => $this->previous($patient, $consultation),
             'trend' => $this->trend($patient, $consultation),
             'prescriptions' => $this->prescriptions($consultation),
+            'files' => MedicalFileResource::collection(
+                $patient->medicalFiles()->with('uploader:id,name')->orderByDesc('study_date')->latest()->get(),
+            )->resolve(),
+            'fileTypes' => MedicalFileType::options(),
             'favorites' => MedicationOptionResource::collection(
                 Medication::query()->favorites()->orderBy('generic_name')->get(),
             )->resolve(),

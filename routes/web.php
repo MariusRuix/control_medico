@@ -12,3 +12,4 @@ require __DIR__.'/settings.php';
 require __DIR__.'/patients.php';
 require __DIR__.'/agenda.php';
 require __DIR__.'/clinical.php';
+require __DIR__.'/medical-files.php';

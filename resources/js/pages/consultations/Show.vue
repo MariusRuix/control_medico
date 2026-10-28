@@ -4,9 +4,11 @@ import { FileSignature, Printer, TriangleAlert } from '@lucide/vue';
 import { computed } from 'vue';
 import DiagnosisList from '@/components/clinical/DiagnosisList.vue';
 import PatientContextPanel from '@/components/clinical/PatientContextPanel.vue';
+import MedicalFilesPanel from '@/components/files/MedicalFilesPanel.vue';
 import PrescriptionsPanel from '@/components/prescriptions/PrescriptionsPanel.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { usePermissions } from '@/composables/usePermissions';
 import { formatDateTime } from '@/lib/format';
 import { bmiCategory } from '@/lib/vitals';
 import { edit } from '@/routes/consultations';
@@ -14,6 +16,8 @@ import { index as patientsIndex, show as patientShow } from '@/routes/patients';
 import type { ConsultationPageProps } from '@/types';
 
 const props = defineProps<ConsultationPageProps>();
+
+const { can } = usePermissions();
 
 defineOptions({
     layout: {
@@ -198,6 +202,16 @@ function print(): void {
                 :critical-allergies="criticalAllergies"
                 :prescriber-missing="prescriberMissing"
                 :patient-has-email="patient.has_email"
+            />
+
+            <MedicalFilesPanel
+                :patient-id="patient.id"
+                :consultation-id="consultation.id"
+                :files="files"
+                :types="fileTypes"
+                :can-upload="can('medical-files.upload')"
+                :can-view="can('medical-files.view')"
+                :can-delete="can('medical-files.delete')"
             />
         </div>
     </div>

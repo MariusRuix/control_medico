@@ -13,6 +13,7 @@ import ConsultationController from '@/actions/App/Http/Controllers/Clinical/Cons
 import Cie10Picker from '@/components/clinical/Cie10Picker.vue';
 import DiagnosisList from '@/components/clinical/DiagnosisList.vue';
 import PatientContextPanel from '@/components/clinical/PatientContextPanel.vue';
+import MedicalFilesPanel from '@/components/files/MedicalFilesPanel.vue';
 import PrescriptionsPanel from '@/components/prescriptions/PrescriptionsPanel.vue';
 import VitalSignsFields from '@/components/clinical/VitalSignsFields.vue';
 import InputError from '@/components/InputError.vue';
@@ -26,6 +27,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { usePermissions } from '@/composables/usePermissions';
 import { formatDateTime } from '@/lib/format';
 import { index as patientsIndex, show as patientShow } from '@/routes/patients';
 import type {
@@ -37,6 +39,8 @@ import type {
 } from '@/types';
 
 const props = defineProps<ConsultationPageProps>();
+
+const { can } = usePermissions();
 
 defineOptions({
     layout: {
@@ -410,6 +414,16 @@ const soapFields: {
                     :critical-allergies="criticalAllergies"
                     :prescriber-missing="prescriberMissing"
                     :patient-has-email="patient.has_email"
+                />
+
+                <MedicalFilesPanel
+                    :patient-id="patient.id"
+                    :consultation-id="consultation.id"
+                    :files="files"
+                    :types="fileTypes"
+                    :can-upload="can('medical-files.upload')"
+                    :can-view="can('medical-files.view')"
+                    :can-delete="can('medical-files.delete')"
                 />
 
                 <p class="text-xs text-muted-foreground">

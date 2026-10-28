@@ -112,3 +112,14 @@ Código: `app/Http/Controllers/Clinical`, `app/Services/Clinical`, `app/Http/Req
 - Dependencia: `barryvdh/laravel-dompdf`.
 
 Código: `app/Services/Prescriptions`, `app/Http/Controllers/Clinical/PrescriptionController.php`, `app/Http/Controllers/Settings/ClinicSettingsController.php`, `resources/views/pdf/prescription.blade.php`, `resources/js/components/prescriptions`, `resources/js/pages/settings/Clinic.vue`. Pruebas: `tests/Feature/Clinical/PrescriptionTest.php`.
+
+### Estudios y archivos
+
+- Panel "Estudios y archivos" en el expediente del paciente y en la consulta (con opción de vincular el estudio a la consulta).
+- Subida múltiple (hasta 10 archivos, 20 MB c/u por defecto, `MEDICAL_MAX_UPLOAD_KB`) con arrastrar y soltar y barra de progreso. Solo PDF, JPG, PNG y WEBP; se valida extensión y tipo real del contenido.
+- Se guardan en el disco privado (`MEDICAL_FILES_DISK`) con nombre aleatorio en `patients/{id}/`; nunca son accesibles por URL pública.
+- Visor integrado (imágenes y PDF) con navegación entre estudios, descarga y "abrir en otra pestaña". Cada vista o descarga queda en la bitácora.
+- Permisos: recepción **sube** y ve el listado (título, tipo, fecha) pero no abre los archivos; el médico ve, descarga y elimina (con motivo). Al eliminar, el archivo físico se conserva (NOM-004).
+- Nuevo permiso `medical-files.delete`: ejecuta `php artisan db:seed --class=RolesAndPermissionsSeeder`.
+
+Código: `app/Services/MedicalFiles`, `app/Http/Controllers/MedicalFiles`, `app/Http/Requests/MedicalFiles`, `resources/js/components/files`. Pruebas: `tests/Feature/MedicalFiles`.

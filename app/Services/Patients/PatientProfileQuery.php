@@ -6,6 +6,7 @@ namespace App\Services\Patients;
 
 use App\Enums\ChargeStatus;
 use App\Enums\Permission;
+use App\Http\Resources\MedicalFileResource;
 use App\Http\Resources\PatientHistoryResource;
 use App\Models\Appointment;
 use App\Models\Consultation;
@@ -34,6 +35,9 @@ final class PatientProfileQuery
             'consultations' => $canSeeClinical ? $this->consultations($patient) : null,
             'appointments' => $user->can(Permission::AppointmentsView->value) ? $this->appointments($patient) : null,
             'balance' => $user->can(Permission::ChargesView->value) ? $this->balance($patient) : null,
+            'files' => $user->can(Permission::MedicalFilesView->value) || $user->can(Permission::MedicalFilesUpload->value)
+                ? $this->files($patient)
+                : null,
         ];
     }
 
@@ -112,6 +116,16 @@ final class PatientProfileQuery
             ])
             ->values()
             ->all();
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    private function files(Patient $patient): array
+    {
+        return MedicalFileResource::collection(
+            $patient->medicalFiles()->with('uploader:id,name')->orderByDesc('study_date')->latest()->get(),
+        )->resolve();
     }
 
     private function balance(Patient $patient): string

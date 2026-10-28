@@ -22,6 +22,7 @@ enum Permission: string
     case PrescriptionsManage = 'prescriptions.manage';
     case MedicalFilesView = 'medical-files.view';
     case MedicalFilesUpload = 'medical-files.upload';
+    case MedicalFilesDelete = 'medical-files.delete';
 
     // Catálogos
     case CatalogsManage = 'catalogs.manage';

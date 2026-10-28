@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Patients;
 
 use App\Enums\BloodType;
+use App\Enums\MedicalFileType;
 use App\Enums\PatientHistoryType;
 use App\Enums\Permission;
 use App\Enums\Sex;
@@ -79,11 +80,15 @@ class PatientController extends Controller
             'patient' => PatientResource::make($patient)->resolve(),
             ...$profile->forUser($patient, $user),
             'historyTypes' => PatientHistoryType::options(),
+            'fileTypes' => MedicalFileType::options(),
             'can' => [
                 'update' => $user->can(Permission::PatientsManage->value),
                 'delete' => $user->can(Permission::PatientsDelete->value),
                 'manageHistories' => $user->can(Permission::PatientHistoriesManage->value),
                 'consult' => $user->can(Permission::ConsultationsManage->value) && ! $patient->trashed(),
+                'uploadFiles' => $user->can(Permission::MedicalFilesUpload->value),
+                'viewFiles' => $user->can(Permission::MedicalFilesView->value),
+                'deleteFiles' => $user->can(Permission::MedicalFilesDelete->value),
             ],
         ]);
     }

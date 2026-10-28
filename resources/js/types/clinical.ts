@@ -1,3 +1,4 @@
+import type { MedicalFileItem } from './files';
 import type { PatientHistory, SelectOption } from './patients';
 
 export type DiagnosisEntry = {
@@ -94,6 +95,8 @@ export type ConsultationPageProps = {
     prescriptions: IssuedPrescription[];
     favorites: MedicationOption[];
     prescriberMissing: string[];
+    files: MedicalFileItem[];
+    fileTypes: SelectOption[];
 };
 
 export type MedicationOption = {

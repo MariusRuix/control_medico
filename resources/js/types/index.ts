@@ -4,3 +4,4 @@ export * from './ui';
 export * from './patients';
 export * from './agenda';
 export * from './clinical';
+export * from './files';

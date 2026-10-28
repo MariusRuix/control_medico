@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { LayoutGrid, Users } from '@lucide/vue';
+import { CalendarDays, LayoutGrid, Users } from '@lucide/vue';
 import { computed } from 'vue';
 import AppLogo from '@/components/AppLogo.vue';
 import NavMain from '@/components/NavMain.vue';
@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/sidebar';
 import { usePermissions } from '@/composables/usePermissions';
 import { dashboard } from '@/routes';
+import { index as appointmentsIndex } from '@/routes/appointments';
 import { index as patientsIndex } from '@/routes/patients';
 import type { NavItem } from '@/types';
 
@@ -23,6 +24,12 @@ const { can } = usePermissions();
 
 const navigation: (NavItem & { permission?: string })[] = [
     { title: 'Inicio', href: dashboard(), icon: LayoutGrid },
+    {
+        title: 'Agenda',
+        href: appointmentsIndex(),
+        icon: CalendarDays,
+        permission: 'appointments.view',
+    },
     {
         title: 'Pacientes',
         href: patientsIndex(),

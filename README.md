@@ -77,3 +77,14 @@ En rutas: `->middleware('permission:consultations.view')`. En Vue: `$page.props.
 - Cada consulta del expediente queda registrada en `audit_logs` (`viewed`).
 
 Código: `app/Http/Controllers/Patients`, `app/Services/Patients`, `app/Http/Requests/Patients`, `resources/js/pages/patients`, `resources/js/components/patients`. Pruebas: `tests/Feature/Patients`.
+
+### Agenda (`/appointments`)
+
+- Calendario con vistas de día, semana y mes; color por estatus y resumen de citas del periodo.
+- Las zonas fuera del horario de atención (`schedule.working_hours`) se muestran en gris; los bloqueos (`schedule_blocks`) con rayas.
+- Nueva cita con clic en un espacio libre o con el botón: búsqueda de paciente, tipo de consulta (define la duración) y horarios libres calculados por el servidor.
+- Validaciones en el servidor (dentro de una transacción con bloqueo): sin empalmes, sin bloqueos, dentro del horario de atención (salvo "sobrecupo") y no en el pasado.
+- Flujo de estatus: Agendada → Confirmada → En consultorio → Finalizada, más Cancelada (con motivo) y No asistió. Las citas cerradas no se pueden reprogramar.
+- Bloquear horario (vacaciones, festivos): solo el médico (`settings.manage`).
+
+Código: `app/Http/Controllers/Agenda`, `app/Services/Agenda`, `app/Http/Requests/Agenda`, `resources/js/pages/appointments`, `resources/js/components/agenda`. Pruebas: `tests/Feature/Agenda`.

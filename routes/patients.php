@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Patients\PatientController;
 use App\Http\Controllers\Patients\PatientHistoryController;
+use App\Http\Controllers\Patients\PatientSearchController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified'])->prefix('patients')->name('patients.')->group(function (): void {
     Route::get('/', [PatientController::class, 'index'])->middleware('permission:patients.view')->name('index');
+    Route::get('search', PatientSearchController::class)->middleware('permission:patients.view')->name('search');
     Route::get('create', [PatientController::class, 'create'])->middleware('permission:patients.manage')->name('create');
     Route::post('/', [PatientController::class, 'store'])->middleware('permission:patients.manage')->name('store');
     Route::get('{patient}', [PatientController::class, 'show'])->middleware('permission:patients.view')->name('show');

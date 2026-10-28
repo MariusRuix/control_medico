@@ -41,6 +41,47 @@ enum AppointmentStatus: string
     }
 
     /**
+     * Cambios de estatus permitidos desde el estatus actual.
+     *
+     * @return list<self>
+     */
+    public function allowedTransitions(): array
+    {
+        return match ($this) {
+            self::Scheduled => [self::Confirmed, self::InProgress, self::Cancelled, self::NoShow],
+            self::Confirmed => [self::Scheduled, self::InProgress, self::Cancelled, self::NoShow],
+            self::InProgress => [self::Completed, self::Confirmed],
+            self::Completed, self::Cancelled, self::NoShow => [],
+        };
+    }
+
+    public function canTransitionTo(self $status): bool
+    {
+        return in_array($status, $this->allowedTransitions(), true);
+    }
+
+    /**
+     * Una cita cerrada ya no se puede reprogramar.
+     */
+    public function isFinal(): bool
+    {
+        return $this->allowedTransitions() === [];
+    }
+
+    /**
+     * @return list<array{value: string, label: string, color: string, transitions: list<string>}>
+     */
+    public static function definitions(): array
+    {
+        return array_map(static fn (self $status): array => [
+            'value' => $status->value,
+            'label' => $status->label(),
+            'color' => $status->color(),
+            'transitions' => array_map(static fn (self $s): string => $s->value, $status->allowedTransitions()),
+        ], self::cases());
+    }
+
+    /**
      * Estatus que ocupan el horario (para validar empalmes).
      *
      * @return list<self>

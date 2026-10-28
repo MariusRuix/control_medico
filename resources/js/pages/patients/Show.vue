@@ -15,6 +15,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
+import { statusBadgeClasses } from '@/lib/agenda';
 import { formatCurrency, formatDate, formatDateTime } from '@/lib/format';
 import { edit, index } from '@/routes/patients';
 import type {
@@ -41,16 +42,6 @@ defineOptions({
         breadcrumbs: [{ title: 'Pacientes', href: index() }],
     },
 });
-
-const statusClasses: Record<string, string> = {
-    sky: 'bg-sky-100 text-sky-800 dark:bg-sky-500/15 dark:text-sky-300',
-    indigo: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-500/15 dark:text-indigo-300',
-    amber: 'bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300',
-    emerald:
-        'bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300',
-    rose: 'bg-rose-100 text-rose-800 dark:bg-rose-500/15 dark:text-rose-300',
-    zinc: 'bg-zinc-100 text-zinc-700 dark:bg-zinc-500/15 dark:text-zinc-300',
-};
 
 const identification: { label: string; value: () => string | null }[] = [
     {
@@ -335,8 +326,9 @@ const identification: { label: string; value: () => string | null }[] = [
                             <span
                                 class="rounded-full px-2 py-0.5 text-xs font-medium"
                                 :class="
-                                    statusClasses[appointment.status_color] ??
-                                    statusClasses.zinc
+                                    statusBadgeClasses[
+                                        appointment.status_color
+                                    ] ?? statusBadgeClasses.zinc
                                 "
                             >
                                 {{ appointment.status_label }}

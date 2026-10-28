@@ -18,7 +18,8 @@ declare module '@inertiajs/core' {
     export interface InertiaConfig {
         sharedPageProps: {
             name: string;
-            auth: Auth;
+            clinic: { name: string; logo_path: string | null };
+            auth: Auth & { roles: string[]; permissions: string[] };
             sidebarOpen: boolean;
             [key: string]: unknown;
         };

@@ -9,6 +9,7 @@ enum Permission: string
     // Pacientes
     case PatientsView = 'patients.view';
     case PatientsManage = 'patients.manage';
+    case PatientsDelete = 'patients.delete';
     case PatientHistoriesManage = 'patient-histories.manage';
 
     // Agenda

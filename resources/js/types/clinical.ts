@@ -52,6 +52,7 @@ export type ConsultationPatient = {
     sex_label: string | null;
     blood_type: string | null;
     is_archived: boolean;
+    has_email: boolean;
 };
 
 export type PreviousConsultation = {
@@ -90,4 +91,47 @@ export type ConsultationPageProps = {
     previous: PreviousConsultation[];
     trend: VitalTrendPoint[];
     templates: NoteTemplate[];
+    prescriptions: IssuedPrescription[];
+    favorites: MedicationOption[];
+    prescriberMissing: string[];
+};
+
+export type MedicationOption = {
+    id: number;
+    name: string;
+    generic_name: string;
+    route: string | null;
+    is_favorite: boolean;
+    default_dose: string | null;
+    default_frequency: string | null;
+    default_duration: string | null;
+    default_instructions: string | null;
+};
+
+export type PrescriptionItemInput = {
+    medication_id: number | null;
+    medication_name: string;
+    dose: string;
+    route: string;
+    frequency: string;
+    duration: string;
+    quantity: string;
+    instructions: string;
+    save_to_vademecum: boolean;
+};
+
+export type IssuedPrescription = {
+    id: number;
+    folio: string;
+    issued_at: string | null;
+    general_instructions: string | null;
+    items: {
+        medication_name: string;
+        dose: string | null;
+        route: string | null;
+        frequency: string | null;
+        duration: string | null;
+        quantity: string | null;
+        instructions: string | null;
+    }[];
 };

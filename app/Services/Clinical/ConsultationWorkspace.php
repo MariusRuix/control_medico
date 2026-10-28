@@ -5,11 +5,16 @@ declare(strict_types=1);
 namespace App\Services\Clinical;
 
 use App\Enums\PatientHistoryType;
+use App\Http\Resources\MedicationOptionResource;
 use App\Http\Resources\PatientHistoryResource;
 use App\Models\Consultation;
 use App\Models\ConsultationDiagnosis;
+use App\Models\Medication;
 use App\Models\NoteTemplate;
 use App\Models\Patient;
+use App\Models\Prescription;
+use App\Models\PrescriptionItem;
+use App\Services\Prescriptions\PrescriberProfile;
 
 /**
  * Datos para la pantalla de consulta: la nota, el contexto clínico del
@@ -20,6 +25,8 @@ final class ConsultationWorkspace
     private const int HISTORY_LIMIT = 5;
 
     private const int TREND_LIMIT = 8;
+
+    public function __construct(private readonly PrescriberProfile $prescriber) {}
 
     /**
      * @return array<string, mixed>
@@ -41,12 +48,18 @@ final class ConsultationWorkspace
                 'sex_label' => $patient->sex?->label(),
                 'blood_type' => $patient->blood_type?->value,
                 'is_archived' => $patient->trashed(),
+                'has_email' => filled($patient->email),
             ],
             'criticalAllergies' => $patient->criticalAllergies()->get()->map(fn ($h): string => $h->description)->values()->all(),
             'histories' => PatientHistoryResource::collection($patient->histories()->latest()->get())->resolve(),
             'historyTypes' => PatientHistoryType::options(),
             'previous' => $this->previous($patient, $consultation),
             'trend' => $this->trend($patient, $consultation),
+            'prescriptions' => $this->prescriptions($consultation),
+            'favorites' => MedicationOptionResource::collection(
+                Medication::query()->favorites()->orderBy('generic_name')->get(),
+            )->resolve(),
+            'prescriberMissing' => $this->prescriber->missing(),
             'templates' => $editable
                 ? NoteTemplate::query()->where('is_active', true)->orderBy('name')->get(['id', 'name', 'structure'])
                 : [],
@@ -92,6 +105,36 @@ final class ConsultationWorkspace
                 'notes' => $d->notes,
             ])->values()->all(),
         ];
+    }
+
+    /**
+     * Recetas emitidas en esta consulta (las anuladas no se muestran).
+     *
+     * @return list<array<string, mixed>>
+     */
+    private function prescriptions(Consultation $consultation): array
+    {
+        return $consultation->prescriptions()
+            ->with('items')
+            ->latest('issued_at')
+            ->get()
+            ->map(fn (Prescription $p): array => [
+                'id' => $p->id,
+                'folio' => $p->folio,
+                'issued_at' => $p->issued_at?->format('Y-m-d\TH:i:s'),
+                'general_instructions' => $p->general_instructions,
+                'items' => $p->items->map(fn (PrescriptionItem $i): array => [
+                    'medication_name' => $i->medication_name,
+                    'dose' => $i->dose,
+                    'route' => $i->route,
+                    'frequency' => $i->frequency,
+                    'duration' => $i->duration,
+                    'quantity' => $i->quantity,
+                    'instructions' => $i->instructions,
+                ])->values()->all(),
+            ])
+            ->values()
+            ->all();
     }
 
     /**

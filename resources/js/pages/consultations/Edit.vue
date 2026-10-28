@@ -13,6 +13,7 @@ import ConsultationController from '@/actions/App/Http/Controllers/Clinical/Cons
 import Cie10Picker from '@/components/clinical/Cie10Picker.vue';
 import DiagnosisList from '@/components/clinical/DiagnosisList.vue';
 import PatientContextPanel from '@/components/clinical/PatientContextPanel.vue';
+import PrescriptionsPanel from '@/components/prescriptions/PrescriptionsPanel.vue';
 import VitalSignsFields from '@/components/clinical/VitalSignsFields.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
@@ -327,7 +328,7 @@ const soapFields: {
         </div>
 
         <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
-            <form class="space-y-6" @submit.prevent="save">
+            <div class="space-y-6">
                 <section class="space-y-3 rounded-xl border p-5">
                     <h2 class="text-base font-medium">Signos vitales</h2>
                     <VitalSignsFields v-model="vitals" :errors="errors" />
@@ -402,11 +403,20 @@ const soapFields: {
                     <InputError :message="errors.diagnoses" />
                 </section>
 
+                <PrescriptionsPanel
+                    :consultation-id="consultation.id"
+                    :prescriptions="prescriptions"
+                    :favorites="favorites"
+                    :critical-allergies="criticalAllergies"
+                    :prescriber-missing="prescriberMissing"
+                    :patient-has-email="patient.has_email"
+                />
+
                 <p class="text-xs text-muted-foreground">
                     Los cambios se guardan solos (o con Ctrl+S). La nota queda
                     cifrada y, una vez firmada, ya no se puede editar.
                 </p>
-            </form>
+            </div>
 
             <aside
                 class="rounded-xl border p-5 xl:sticky xl:top-4 xl:max-h-[calc(100vh-2rem)] xl:self-start xl:overflow-y-auto"

@@ -100,3 +100,15 @@ Código: `app/Http/Controllers/Agenda`, `app/Services/Agenda`, `app/Http/Request
 - Solo el médico (`consultations.view` / `consultations.manage`); cada apertura queda en la bitácora.
 
 Código: `app/Http/Controllers/Clinical`, `app/Services/Clinical`, `app/Http/Requests/Clinical`, `resources/js/pages/consultations`, `resources/js/components/clinical`. Pruebas: `tests/Feature/Clinical`.
+
+### Recetas
+
+- Se emiten desde la consulta (borrador o firmada): vademécum con un clic, buscador del catálogo o medicamento en texto libre (opción de guardarlo en el vademécum con su posología).
+- Aviso de **posible alergia** cuando el medicamento comparte raíz con una alergia crítica del paciente (p. ej. _Sulfametoxazol_ y _Sulfas_).
+- Al emitir: folio consecutivo (`folios.prescription_*`), huella HMAC de integridad (código de verificación impreso) y PDF tamaño carta guardado en el disco privado. Las recetas emitidas no se editan; se anulan con motivo (queda en la bitácora).
+- El PDF incluye los datos que exige la receta: médico, cédula profesional, institución, domicilio, fecha, paciente, alergias, medicamentos con dosis/vía/frecuencia/duración y firma.
+- Envío por correo al paciente con el PDF adjunto (configura `MAIL_*` en `.env`; con `MAIL_MAILER=log` el correo solo se escribe en `storage/logs`).
+- **Configuración → Consultorio** (`/settings/clinic`, solo médico): datos del médico y del consultorio, firma, sello y logotipo. No se pueden emitir recetas hasta completar nombre, cédula, institución y domicilio.
+- Dependencia: `barryvdh/laravel-dompdf`.
+
+Código: `app/Services/Prescriptions`, `app/Http/Controllers/Clinical/PrescriptionController.php`, `app/Http/Controllers/Settings/ClinicSettingsController.php`, `resources/views/pdf/prescription.blade.php`, `resources/js/components/prescriptions`, `resources/js/pages/settings/Clinic.vue`. Pruebas: `tests/Feature/Clinical/PrescriptionTest.php`.

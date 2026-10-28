@@ -4,6 +4,7 @@ import { FileSignature, Printer, TriangleAlert } from '@lucide/vue';
 import { computed } from 'vue';
 import DiagnosisList from '@/components/clinical/DiagnosisList.vue';
 import PatientContextPanel from '@/components/clinical/PatientContextPanel.vue';
+import PrescriptionsPanel from '@/components/prescriptions/PrescriptionsPanel.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { formatDateTime } from '@/lib/format';
@@ -187,6 +188,17 @@ function print(): void {
                     :trend="trend"
                 />
             </aside>
+        </div>
+
+        <div class="print:hidden">
+            <PrescriptionsPanel
+                :consultation-id="consultation.id"
+                :prescriptions="prescriptions"
+                :favorites="favorites"
+                :critical-allergies="criticalAllergies"
+                :prescriber-missing="prescriberMissing"
+                :patient-has-email="patient.has_email"
+            />
         </div>
     </div>
 </template>

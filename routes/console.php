@@ -15,3 +15,9 @@ Schedule::command('appointments:send-reminders')
     ->everyFifteenMinutes()
     ->withoutOverlapping()
     ->onOneServer();
+
+// Respaldo diario cifrado de la base de datos y los archivos (config/backup.php).
+Schedule::command('backup:run')
+    ->dailyAt((string) config('backup.time', '21:30'))
+    ->withoutOverlapping(60)
+    ->onOneServer();

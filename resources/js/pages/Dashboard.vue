@@ -33,6 +33,7 @@ import {
 } from '@/routes/consultations';
 import { create as patientCreate } from '@/routes/patients';
 import { edit as clinicSettings } from '@/routes/settings/clinic';
+import { index as backupsIndex } from '@/routes/settings/backups';
 import type {
     AppointmentStatusDefinition,
     BillingOptions,
@@ -69,6 +70,7 @@ const props = defineProps<{
     statuses: AppointmentStatusDefinition[];
     billing: BillingOptions | null;
     needsSetup: boolean;
+    backupWarning: string | null;
     can: {
         manageAppointments: boolean;
         viewPatients: boolean;
@@ -224,6 +226,20 @@ function goToAgenda(): void {
             </p>
             <Button size="sm" variant="outline" as-child>
                 <Link :href="clinicSettings()"><Settings /> Configurar</Link>
+            </Button>
+        </div>
+
+        <div
+            v-if="backupWarning"
+            class="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200"
+        >
+            <p class="flex items-center gap-2">
+                <TriangleAlert class="size-4 shrink-0" />
+                {{ backupWarning }} Revisa los respaldos para no perder
+                información.
+            </p>
+            <Button size="sm" variant="outline" as-child>
+                <Link :href="backupsIndex()"><Settings /> Respaldos</Link>
             </Button>
         </div>
 

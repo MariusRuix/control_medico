@@ -22,3 +22,4 @@ require __DIR__.'/catalogs.php';
 require __DIR__.'/users.php';
 require __DIR__.'/audit.php';
 require __DIR__.'/reports.php';
+require __DIR__.'/backups.php';

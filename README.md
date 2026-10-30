@@ -206,3 +206,23 @@ Código: `app/Services/Audit`, `app/Services/AuditLogger.php`, `app/Listeners/Lo
 - **Exportar a Excel (CSV):** detalle de pagos del periodo, ingresos por servicio y adeudos a hoy. Cada exportación queda en la bitácora.
 
 Código: `app/Services/Reports`, `app/Http/Controllers/Reports/FinancialReportController.php`, `app/Http/Requests/Reports`, `routes/reports.php`, `resources/js/pages/reports/Finance.vue`. Pruebas: `tests/Feature/Reports`.
+
+### Respaldos (`/settings/backups`)
+
+- Todos los días a las `BACKUP_TIME` (21:30 por defecto) se genera un ZIP con el volcado de la base de datos (`mysqldump`), todos los archivos privados (estudios, recetas en PDF, firma, sello y logotipo) y un `manifest.json`. Se verifica al terminar y se borran los de más de `BACKUP_KEEP_DAYS` días (siempre quedan los últimos 3).
+- **Configura en `.env`:**
+    - `BACKUP_PATH`: una carpeta **fuera del equipo o sincronizada** (OneDrive, Google Drive, disco externo). Por defecto queda en `storage/app/backups` y la pantalla lo marca como riesgo.
+    - `BACKUP_PASSWORD`: cifra el ZIP con AES-256. Guárdala fuera del equipo: sin ella no se puede abrir.
+    - `BACKUP_MYSQLDUMP_PATH`: en Laragon, la ruta completa, p. ej. `C:\laragon\bin\mysql\mariadb-11.4.2-winx64\bin\mysqldump.exe`.
+- **Configuración → Respaldos** (solo el médico, pide su contraseña): estado del último respaldo, botón **Respaldar ahora** y descarga de los respaldos guardados. Si no hay un respaldo exitoso en 48 horas, Inicio muestra un aviso.
+- Manual: `php artisan backup:run`. Requiere el programador de tareas (igual que los recordatorios).
+- Crear, fallar o descargar un respaldo queda en la bitácora.
+
+**Restaurar** (en un equipo con el sistema instalado):
+
+1. Abre el ZIP con 7-Zip usando `BACKUP_PASSWORD` (el Explorador de Windows no abre ZIP con AES-256).
+2. En HeidiSQL crea la base vacía e importa `database/database.sql` (Archivo → Ejecutar archivo SQL), o `mysql -u root control_medico < database.sql`.
+3. Copia el contenido de la carpeta `files` a `storage/app/private`.
+4. Usa el mismo `APP_KEY` y `BLIND_INDEX_KEY` del `.env` original: sin ellos los datos cifrados (CURP, notas clínicas) no se pueden leer. Guarda una copia del `.env` junto con la contraseña de respaldos.
+
+Código: `app/Services/Backups`, `app/Console/Commands/RunBackup.php`, `app/Http/Controllers/Settings/BackupController.php`, `config/backup.php`, `resources/js/pages/settings/Backups.vue`. Pruebas: `tests/Feature/Backups`.

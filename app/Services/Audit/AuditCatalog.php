@@ -40,6 +40,9 @@ final class AuditCatalog
         'deactivated' => 'Cuenta desactivada',
         'password_reset' => 'Contraseña restablecida',
         'exported' => 'Exportación (bitácora o reporte)',
+        'backup_created' => 'Respaldo creado',
+        'backup_failed' => 'Respaldo fallido',
+        'backup_downloaded' => 'Respaldo descargado',
     ];
 
     /**

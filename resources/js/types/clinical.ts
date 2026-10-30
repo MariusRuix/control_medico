@@ -43,7 +43,15 @@ export type Consultation = VitalSigns &
             service: string | null;
         } | null;
         diagnoses: DiagnosisEntry[];
+        addenda: Addendum[];
     };
+
+export type Addendum = {
+    id: number;
+    body: string;
+    author: string | null;
+    created_at: string | null;
+};
 
 export type ConsultationPatient = {
     id: number;

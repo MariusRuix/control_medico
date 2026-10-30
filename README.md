@@ -45,16 +45,16 @@ Los permisos están en `app/Enums/Permission.php` y la asignación por rol en `a
 
 En rutas: `->middleware('permission:consultations.view')`. En Vue: `$page.props.auth.permissions`.
 
-## Base de datos (19 tablas de negocio)
+## Base de datos (20 tablas de negocio)
 
-| Módulo     | Tablas                                                                                                                                      |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| Sistema    | `settings`, `audit_logs` (+ `users` y tablas de Spatie)                                                                                     |
-| Pacientes  | `patients`, `patient_histories` (antecedentes y alergias)                                                                                   |
-| Agenda     | `services`, `schedule_blocks`, `appointments`                                                                                               |
-| Expediente | `consultations` (SOAP + signos vitales), `consultation_diagnoses`, `prescriptions`, `prescription_items`, `medical_files`, `note_templates` |
-| Catálogos  | `cie10_codes`, `medications` (incluye vademécum personal)                                                                                   |
-| Finanzas   | `charges`, `charge_items`, `payments`, `cash_registers`                                                                                     |
+| Módulo     | Tablas                                                                                                                                                              |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Sistema    | `settings`, `audit_logs` (+ `users` y tablas de Spatie)                                                                                                             |
+| Pacientes  | `patients`, `patient_histories` (antecedentes y alergias)                                                                                                           |
+| Agenda     | `services`, `schedule_blocks`, `appointments`                                                                                                                       |
+| Expediente | `consultations` (SOAP + signos vitales), `consultation_diagnoses`, `consultation_addenda`, `prescriptions`, `prescription_items`, `medical_files`, `note_templates` |
+| Catálogos  | `cie10_codes`, `medications` (incluye vademécum personal)                                                                                                           |
+| Finanzas   | `charges`, `charge_items`, `payments`, `cash_registers`                                                                                                             |
 
 ## Decisiones de diseño
 
@@ -155,3 +155,11 @@ Código: `app/Http/Controllers/DashboardController.php`, `app/Services/Dashboard
 - Solo el médico (`catalogs.manage`, `settings.manage`).
 
 Código: `app/Http/Controllers/Catalogs`, `app/Services/Catalogs`, `app/Http/Requests/Catalogs`, `app/Http/Controllers/Settings/ScheduleSettingsController.php`, `resources/js/pages/catalogs`, `resources/js/pages/settings/Schedule.vue`. Pruebas: `tests/Feature/Catalogs`.
+
+### Notas aclaratorias (addenda)
+
+- En una nota firmada, el médico puede agregar notas aclaratorias para corregir o complementar sin modificar el registro original (NOM-004-SSA3-2012).
+- Cada nota aclaratoria queda con autor, fecha y hora, cifrada en reposo y en la bitácora; el modelo impide editarlas o borrarlas.
+- Se muestran (y se imprimen) debajo de los diagnósticos de la nota. Los borradores se siguen editando directamente.
+
+Código: `app/Models/ConsultationAddendum.php`, `app/Services/Clinical/AddendumService.php`, `resources/js/components/clinical/AddendaSection.vue`. Migración: `2026_10_30_000001_create_consultation_addenda_table`. Pruebas: `tests/Feature/Clinical/AddendumTest.php`.

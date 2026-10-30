@@ -119,6 +119,12 @@ class Consultation extends Model
         return $this->hasMany(ConsultationDiagnosis::class);
     }
 
+    /** @return HasMany<ConsultationAddendum, $this> */
+    public function addenda(): HasMany
+    {
+        return $this->hasMany(ConsultationAddendum::class)->oldest();
+    }
+
     /** @return HasMany<Prescription, $this> */
     public function prescriptions(): HasMany
     {

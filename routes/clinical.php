@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Clinical\Cie10SearchController;
+use App\Http\Controllers\Clinical\ConsultationAddendumController;
 use App\Http\Controllers\Clinical\ConsultationController;
 use App\Http\Controllers\Clinical\MedicationSearchController;
 use App\Http\Controllers\Clinical\PrescriptionController;
@@ -20,6 +21,7 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
         Route::put('consultations/{consultation}', [ConsultationController::class, 'update'])->name('consultations.update');
         Route::post('consultations/{consultation}/sign', [ConsultationController::class, 'sign'])->name('consultations.sign');
         Route::delete('consultations/{consultation}', [ConsultationController::class, 'destroy'])->name('consultations.destroy');
+        Route::post('consultations/{consultation}/addenda', [ConsultationAddendumController::class, 'store'])->name('consultations.addenda.store');
 
         Route::get('catalogs/cie10', Cie10SearchController::class)->name('catalogs.cie10');
     });

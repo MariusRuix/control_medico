@@ -10,6 +10,7 @@ use App\Http\Resources\MedicalFileResource;
 use App\Http\Resources\MedicationOptionResource;
 use App\Http\Resources\PatientHistoryResource;
 use App\Models\Consultation;
+use App\Models\ConsultationAddendum;
 use App\Models\ConsultationDiagnosis;
 use App\Models\Medication;
 use App\Models\NoteTemplate;
@@ -35,7 +36,7 @@ final class ConsultationWorkspace
      */
     public function build(Consultation $consultation, bool $editable): array
     {
-        $consultation->loadMissing(['diagnoses.code', 'appointment.service', 'author:id,name']);
+        $consultation->loadMissing(['diagnoses.code', 'appointment.service', 'author:id,name', 'addenda.author:id,name']);
 
         /** @var Patient $patient */
         $patient = Patient::withTrashed()->findOrFail($consultation->patient_id);
@@ -103,6 +104,12 @@ final class ConsultationWorkspace
             'objective' => $c->objective,
             'assessment' => $c->assessment,
             'plan' => $c->plan,
+            'addenda' => $c->addenda->map(fn (ConsultationAddendum $a): array => [
+                'id' => $a->id,
+                'body' => $a->body,
+                'author' => $a->author?->name,
+                'created_at' => $a->created_at?->format('Y-m-d\TH:i:s'),
+            ])->values()->all(),
             'diagnoses' => $c->diagnoses->map(fn (ConsultationDiagnosis $d): array => [
                 'cie10_code_id' => $d->cie10_code_id,
                 'code' => $d->code->code,

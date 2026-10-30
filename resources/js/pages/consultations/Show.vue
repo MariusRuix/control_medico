@@ -2,6 +2,7 @@
 import { Head, Link } from '@inertiajs/vue3';
 import { FileSignature, Printer, TriangleAlert } from '@lucide/vue';
 import { computed } from 'vue';
+import AddendaSection from '@/components/clinical/AddendaSection.vue';
 import DiagnosisList from '@/components/clinical/DiagnosisList.vue';
 import PatientContextPanel from '@/components/clinical/PatientContextPanel.vue';
 import MedicalFilesPanel from '@/components/files/MedicalFilesPanel.vue';
@@ -182,6 +183,14 @@ function print(): void {
                         readonly
                     />
                 </section>
+
+                <AddendaSection
+                    :consultation-id="consultation.id"
+                    :addenda="consultation.addenda"
+                    :can-add="
+                        !!consultation.signed_at && can('consultations.manage')
+                    "
+                />
             </article>
 
             <aside class="rounded-xl border p-5 print:hidden">

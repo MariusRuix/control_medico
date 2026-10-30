@@ -195,3 +195,14 @@ Código: `app/Services/Users`, `app/Http/Controllers/Users/UserController.php`, 
 - Los registros no se pueden modificar ni borrar desde la aplicación, y los valores cifrados aparecen como `[protegido]`.
 
 Código: `app/Services/Audit`, `app/Services/AuditLogger.php`, `app/Listeners/LogAuthenticationEvents.php`, `app/Http/Controllers/Audit/AuditLogController.php`, `resources/js/pages/audit/Index.vue`. Migración: `2026_10_31_000001_add_patient_id_to_audit_logs_table`. Pruebas: `tests/Feature/Audit`.
+
+### Reportes financieros (`/reports/finance`)
+
+- Menú **Reportes** (solo el médico, `financial-reports.view`). Periodo libre (máximo dos años) con atajos: este mes, mes anterior, últimos 30 días y este año.
+- **Indicadores:** ingresos cobrados (con comparación contra el periodo anterior de la misma duración), facturado y cobro promedio, descuentos otorgados y adeudos a hoy.
+- **Ingresos por día, semana o mes** (se elige sola según el periodo; se puede cambiar), **por método de pago** y **por servicio** (los conceptos libres aparecen como "Otros conceptos").
+- **Antigüedad de adeudos** a hoy (0–30, 31–60, 61–90 y más de 90 días) y los 10 pacientes con mayor saldo.
+- Definiciones: _ingresos_ = pagos recibidos en el periodo; _facturado_ = cobros no cancelados creados en el periodo, pagados o no.
+- **Exportar a Excel (CSV):** detalle de pagos del periodo, ingresos por servicio y adeudos a hoy. Cada exportación queda en la bitácora.
+
+Código: `app/Services/Reports`, `app/Http/Controllers/Reports/FinancialReportController.php`, `app/Http/Requests/Reports`, `routes/reports.php`, `resources/js/pages/reports/Finance.vue`. Pruebas: `tests/Feature/Reports`.

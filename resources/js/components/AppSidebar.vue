@@ -3,6 +3,7 @@ import { Link } from '@inertiajs/vue3';
 import {
     BookOpen,
     CalendarDays,
+    ChartColumn,
     LayoutGrid,
     ScrollText,
     Users,
@@ -28,6 +29,7 @@ import { index as auditIndex } from '@/routes/audit-logs';
 import { index as cashIndex } from '@/routes/cash';
 import { index as catalogsIndex } from '@/routes/catalogs/vademecum';
 import { index as patientsIndex } from '@/routes/patients';
+import { finance as reportsFinance } from '@/routes/reports';
 import type { NavItem } from '@/types';
 
 const { can } = usePermissions();
@@ -51,6 +53,12 @@ const navigation: (NavItem & { permission?: string })[] = [
         href: cashIndex(),
         icon: Wallet,
         permission: 'charges.view',
+    },
+    {
+        title: 'Reportes',
+        href: reportsFinance(),
+        icon: ChartColumn,
+        permission: 'financial-reports.view',
     },
     {
         title: 'Catálogos',

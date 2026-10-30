@@ -21,3 +21,4 @@ require __DIR__.'/billing.php';
 require __DIR__.'/catalogs.php';
 require __DIR__.'/users.php';
 require __DIR__.'/audit.php';
+require __DIR__.'/reports.php';

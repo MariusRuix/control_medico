@@ -11,6 +11,7 @@ import { edit as editAppearance } from '@/routes/appearance';
 import { edit as editProfile } from '@/routes/profile';
 import { edit as editSecurity } from '@/routes/security';
 import { edit as editClinic } from '@/routes/settings/clinic';
+import { edit as editReminders } from '@/routes/settings/reminders';
 import { edit as editSchedule } from '@/routes/settings/schedule';
 import type { NavItem } from '@/types';
 
@@ -24,6 +25,7 @@ const sidebarNavItems = computed<NavItem[]>(() => [
         ? [
               { title: 'Consultorio', href: editClinic() },
               { title: 'Horario', href: editSchedule() },
+              { title: 'Recordatorios', href: editReminders() },
           ]
         : []),
 ]);

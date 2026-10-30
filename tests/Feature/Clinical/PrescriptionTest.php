@@ -162,7 +162,8 @@ class PrescriptionTest extends TestCase
         $this->post(route('prescriptions.email', $prescription))->assertSessionHasNoErrors();
 
         Mail::assertSent(PrescriptionMail::class, fn (PrescriptionMail $mail): bool => $mail->hasTo('ana@example.com')
-            && count($mail->attachments()) === 1);
+            && count($mail->attachments()) === 1
+            && str_contains($mail->render(), 'R-000001'));
     }
 
     public function test_voiding_requires_a_reason_and_is_audited(): void

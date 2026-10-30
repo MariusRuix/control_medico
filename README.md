@@ -163,3 +163,13 @@ Código: `app/Http/Controllers/Catalogs`, `app/Services/Catalogs`, `app/Http/Req
 - Se muestran (y se imprimen) debajo de los diagnósticos de la nota. Los borradores se siguen editando directamente.
 
 Código: `app/Models/ConsultationAddendum.php`, `app/Services/Clinical/AddendumService.php`, `resources/js/components/clinical/AddendaSection.vue`. Migración: `2026_10_30_000001_create_consultation_addenda_table`. Pruebas: `tests/Feature/Clinical/AddendumTest.php`.
+
+### Recordatorios de citas
+
+- Se activan en **Configuración → Recordatorios**: horas de anticipación (2, 4, 12, 24 o 48) y canal (correo, WhatsApp o ambos).
+- Se envían una sola vez por cita (`reminder_sent_at`) a citas agendadas o confirmadas. Si el paciente no tiene correo ni teléfono, la cita se marca para no reintentar.
+- En el detalle de la cita (agenda) hay un botón **Enviar/Reenviar recordatorio** y un enlace de WhatsApp manual (`wa.me`), que funciona sin la API.
+- Correo: configurar `MAIL_*` en `.env`. WhatsApp (opcional): `WHATSAPP_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID` y una plantilla aprobada en Meta (`WHATSAPP_REMINDER_TEMPLATE`, por defecto `recordatorio_cita`, con parámetros: nombre, fecha, hora y consultorio).
+- Requiere el programador de tareas de Laravel (cada 15 minutos). En Laragon, deja corriendo `php artisan schedule:work`, o crea una tarea en el Programador de tareas de Windows que ejecute `php artisan schedule:run` cada minuto. Envío manual: `php artisan appointments:send-reminders`.
+
+Código: `app/Services/Reminders`, `app/Mail/AppointmentReminderMail.php`, `app/Console/Commands/SendAppointmentReminders.php`, `app/Http/Controllers/Agenda/AppointmentReminderController.php`, `app/Http/Controllers/Settings/ReminderSettingsController.php`, `resources/js/pages/settings/Reminders.vue`. Pruebas: `tests/Feature/Agenda/ReminderTest.php`.

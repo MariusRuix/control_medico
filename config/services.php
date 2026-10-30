@@ -35,4 +35,19 @@ return [
         ],
     ],
 
+
+    /*
+    | WhatsApp Business Cloud API (Meta). Opcional: si no se configura, los
+    | recordatorios solo se envían por correo y la agenda ofrece un enlace
+    | wa.me para enviarlo manualmente.
+    */
+    'whatsapp' => [
+        'token' => env('WHATSAPP_TOKEN'),
+        'phone_number_id' => env('WHATSAPP_PHONE_NUMBER_ID'),
+        'template' => env('WHATSAPP_REMINDER_TEMPLATE', 'recordatorio_cita'),
+        'language' => env('WHATSAPP_TEMPLATE_LANGUAGE', 'es_MX'),
+        'api_version' => env('WHATSAPP_API_VERSION', 'v21.0'),
+        'country_code' => env('WHATSAPP_DEFAULT_COUNTRY_CODE', '52'),
+    ],
+
 ];

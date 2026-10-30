@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Agenda\AppointmentController;
+use App\Http\Controllers\Agenda\AppointmentReminderController;
 use App\Http\Controllers\Agenda\ScheduleBlockController;
 use Illuminate\Support\Facades\Route;
 
@@ -13,6 +14,9 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
         Route::post('/', [AppointmentController::class, 'store'])->middleware('permission:appointments.manage')->name('store');
         Route::put('{appointment}', [AppointmentController::class, 'update'])->middleware('permission:appointments.manage')->name('update');
         Route::patch('{appointment}/status', [AppointmentController::class, 'status'])->middleware('permission:appointments.manage')->name('status');
+        Route::post('{appointment}/reminder', AppointmentReminderController::class)
+            ->middleware(['permission:appointments.manage', 'throttle:10,1'])
+            ->name('reminder');
     });
 
     Route::middleware('permission:settings.manage')->prefix('schedule-blocks')->name('schedule-blocks.')->group(function (): void {

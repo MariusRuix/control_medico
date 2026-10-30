@@ -1,8 +1,16 @@
 <script setup lang="ts">
-import { Link, router } from '@inertiajs/vue3';
-import { CalendarClock, Phone, Stethoscope, Wallet } from '@lucide/vue';
+import { Link, router, usePage } from '@inertiajs/vue3';
+import {
+    BellRing,
+    CalendarClock,
+    MessageCircle,
+    Phone,
+    Stethoscope,
+    Wallet,
+} from '@lucide/vue';
 import { computed, ref, watch } from 'vue';
 import AppointmentController from '@/actions/App/Http/Controllers/Agenda/AppointmentController';
+import AppointmentReminderController from '@/actions/App/Http/Controllers/Agenda/AppointmentReminderController';
 import ConsultationController from '@/actions/App/Http/Controllers/Clinical/ConsultationController';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
@@ -27,6 +35,7 @@ import {
     show as consultationShow,
 } from '@/routes/consultations';
 import { show as patientShow } from '@/routes/patients';
+import { formatDateTime } from '@/lib/format';
 import type { AppointmentStatusDefinition, CalendarAppointment } from '@/types';
 
 const open = defineModel<boolean>('open', { required: true });
@@ -91,6 +100,45 @@ function startConsultation(): void {
         },
     );
 }
+
+// --- Recordatorios ----------------------------------------------------------
+const page = usePage();
+const reminding = ref(false);
+
+function sendReminder(): void {
+    if (!props.appointment) {
+        return;
+    }
+
+    router.post(
+        AppointmentReminderController.url(props.appointment.id),
+        {},
+        {
+            preserveScroll: true,
+            onStart: () => (reminding.value = true),
+            onFinish: () => (reminding.value = false),
+            onSuccess: () => (open.value = false),
+            onError: (e) => (errors.value = e),
+        },
+    );
+}
+
+/** Enlace wa.me con el mensaje prellenado (no requiere la API de WhatsApp). */
+const whatsappLink = computed(() => {
+    const a = props.appointment;
+    const digits = (a?.patient?.phone ?? '').replace(/\D+/g, '');
+
+    if (!a || digits.length < 10) {
+        return null;
+    }
+
+    const phone = digits.length === 10 ? `52${digits}` : digits;
+    const date = capitalize(formatters.long.format(parseLocal(a.starts_at)));
+    const clinic = page.props.clinic?.name ?? '';
+    const text = `Hola ${a.patient?.full_name ?? ''}, le recordamos su cita en ${clinic} el ${date} a las ${timeOf(a.starts_at)} h. Si no puede asistir, por favor avísenos. ¡Gracias!`;
+
+    return `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+});
 
 const isFinal = computed(() => (status.value?.transitions.length ?? 0) === 0);
 
@@ -236,6 +284,43 @@ function changeStatus(value: string): void {
             >
                 <Wallet /> Registrar cobro
             </Button>
+
+            <div
+                v-if="canManage && !isFinal && appointment.patient"
+                class="flex flex-wrap items-center justify-between gap-2 rounded-lg border p-3 text-sm"
+            >
+                <span class="flex items-center gap-1.5 text-muted-foreground">
+                    <BellRing class="size-4" />
+                    <template v-if="appointment.reminder_sent_at">
+                        Recordatorio enviado
+                        {{ formatDateTime(appointment.reminder_sent_at) }}
+                    </template>
+                    <template v-else>Sin recordatorio</template>
+                </span>
+                <div class="flex gap-1">
+                    <Button
+                        v-if="whatsappLink"
+                        size="sm"
+                        variant="ghost"
+                        as-child
+                    >
+                        <a :href="whatsappLink" target="_blank" rel="noopener"
+                            ><MessageCircle /> WhatsApp</a
+                        >
+                    </Button>
+                    <Button
+                        size="sm"
+                        variant="outline"
+                        :disabled="reminding"
+                        @click="sendReminder"
+                    >
+                        {{
+                            appointment.reminder_sent_at ? 'Reenviar' : 'Enviar'
+                        }}
+                    </Button>
+                </div>
+                <InputError class="w-full" :message="errors.reminder" />
+            </div>
 
             <template v-if="canManage && !isFinal">
                 <div v-if="cancelling" class="space-y-2 rounded-lg border p-3">

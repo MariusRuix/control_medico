@@ -28,6 +28,7 @@ export type CalendarAppointment = {
     reason: string | null;
     notes: string | null;
     cancel_reason: string | null;
+    reminder_sent_at: string | null;
     patient: {
         id: number;
         folio: string;

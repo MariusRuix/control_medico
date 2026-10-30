@@ -94,6 +94,7 @@ final class CalendarQuery
             'reason' => $a->reason,
             'notes' => $a->notes,
             'cancel_reason' => $a->cancel_reason,
+            'reminder_sent_at' => $a->reminder_sent_at?->format('Y-m-d\TH:i:s'),
             'patient' => $a->patient !== null ? [
                 'id' => $a->patient->id,
                 'folio' => $a->patient->folio,

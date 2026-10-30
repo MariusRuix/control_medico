@@ -1,9 +1,12 @@
+@php
+    $callUs = $clinicPhone ? " al **{$clinicPhone}**" : '';
+@endphp
 <x-mail::message>
 # Hola, {{ $patientName }}
 
 Te compartimos tu receta médica (folio **{{ $folio }}**) en el archivo PDF adjunto.
 
-Sigue las indicaciones tal como están escritas. Si tienes dudas sobre tu tratamiento o presentas alguna reacción, comunícate con nosotros@if($clinicPhone) al **{{ $clinicPhone }}**@endif.
+Sigue las indicaciones tal como están escritas. Si tienes dudas sobre tu tratamiento o presentas alguna reacción, comunícate con nosotros{!! $callUs !!}.
 
 Atentamente,<br>
 {{ $doctorName ?? $clinicName }}<br>

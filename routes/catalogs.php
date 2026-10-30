@@ -6,6 +6,7 @@ use App\Http\Controllers\Catalogs\Cie10Controller;
 use App\Http\Controllers\Catalogs\MedicationController;
 use App\Http\Controllers\Catalogs\NoteTemplateController;
 use App\Http\Controllers\Catalogs\ServiceController;
+use App\Http\Controllers\Settings\ReminderSettingsController;
 use App\Http\Controllers\Settings\ScheduleSettingsController;
 use Illuminate\Support\Facades\Route;
 
@@ -35,5 +36,7 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::middleware('permission:settings.manage')->group(function (): void {
         Route::get('settings/schedule', [ScheduleSettingsController::class, 'edit'])->name('settings.schedule.edit');
         Route::put('settings/schedule', [ScheduleSettingsController::class, 'update'])->name('settings.schedule.update');
+        Route::get('settings/reminders', [ReminderSettingsController::class, 'edit'])->name('settings.reminders.edit');
+        Route::put('settings/reminders', [ReminderSettingsController::class, 'update'])->name('settings.reminders.update');
     });
 });

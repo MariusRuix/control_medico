@@ -144,3 +144,14 @@ Código: `app/Services/Billing`, `app/Http/Controllers/Billing`, `app/Http/Reque
 - Notas sin firmar (solo médico) para retomarlas con un clic, y aviso si faltan los datos del consultorio para emitir recetas.
 
 Código: `app/Http/Controllers/DashboardController.php`, `app/Services/Dashboard/DashboardQuery.php`, `resources/js/pages/Dashboard.vue`. Pruebas: `tests/Feature/HomeDashboardTest.php`.
+
+### Catálogos (`/catalogs`) y horario (`/settings/schedule`)
+
+- **Vademécum**: alta y edición de medicamentos con posología predeterminada, marcar como favorito con un clic (aparece en las recetas), desactivar. Evita duplicados del mismo genérico, concentración y presentación.
+- **Servicios y precios**: precio, si se puede agendar (con duración y color) y activo/inactivo. Se usan en la agenda y en los cobros.
+- **Plantillas de nota**: texto inicial de cada apartado SOAP; se aplican desde la consulta.
+- **Diagnósticos CIE-10**: importación del catálogo completo de la DGIS desde CSV (reconoce `CATALOG_KEY, NOMBRE` o `code, description`, separador coma/punto y coma/tabulador y archivos en UTF-8 o Latin-1), búsqueda y ocultar códigos del autocompletado.
+- **Horario de atención** (Configuración → Horario): rangos por día sin empalmes, copiar el lunes al resto de la semana e intervalo de la agenda.
+- Solo el médico (`catalogs.manage`, `settings.manage`).
+
+Código: `app/Http/Controllers/Catalogs`, `app/Services/Catalogs`, `app/Http/Requests/Catalogs`, `app/Http/Controllers/Settings/ScheduleSettingsController.php`, `resources/js/pages/catalogs`, `resources/js/pages/settings/Schedule.vue`. Pruebas: `tests/Feature/Catalogs`.

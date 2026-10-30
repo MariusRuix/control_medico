@@ -18,3 +18,4 @@ require __DIR__.'/agenda.php';
 require __DIR__.'/clinical.php';
 require __DIR__.'/medical-files.php';
 require __DIR__.'/billing.php';
+require __DIR__.'/catalogs.php';

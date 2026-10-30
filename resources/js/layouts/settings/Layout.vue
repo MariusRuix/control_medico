@@ -11,6 +11,7 @@ import { edit as editAppearance } from '@/routes/appearance';
 import { edit as editProfile } from '@/routes/profile';
 import { edit as editSecurity } from '@/routes/security';
 import { edit as editClinic } from '@/routes/settings/clinic';
+import { edit as editSchedule } from '@/routes/settings/schedule';
 import type { NavItem } from '@/types';
 
 const { can } = usePermissions();
@@ -20,7 +21,10 @@ const sidebarNavItems = computed<NavItem[]>(() => [
     { title: 'Seguridad', href: editSecurity() },
     { title: 'Apariencia', href: editAppearance() },
     ...(can('settings.manage')
-        ? [{ title: 'Consultorio', href: editClinic() }]
+        ? [
+              { title: 'Consultorio', href: editClinic() },
+              { title: 'Horario', href: editSchedule() },
+          ]
         : []),
 ]);
 

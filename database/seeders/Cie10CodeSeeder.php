@@ -4,23 +4,17 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Services\Catalogs\Cie10Importer;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use RuntimeException;
-use Throwable;
 
 /**
- * Importa el catálogo CIE-10 desde database/data/cie10.csv
- * (columnas: code,description,chapter). El archivo incluido trae solo
- * diagnósticos frecuentes; reemplázalo por el catálogo completo de la
- * DGIS (Secretaría de Salud) con las mismas columnas.
+ * Importa el catálogo CIE-10 desde database/data/cie10.csv. El archivo
+ * incluido trae solo diagnósticos frecuentes; el catálogo completo de la
+ * DGIS se puede cargar desde Catálogos → CIE-10.
  */
 class Cie10CodeSeeder extends Seeder
 {
-    private const int CHUNK = 1000;
-
-    public function run(): void
+    public function run(Cie10Importer $importer): void
     {
         $path = database_path('data/cie10.csv');
 
@@ -30,60 +24,8 @@ class Cie10CodeSeeder extends Seeder
             return;
         }
 
-        try {
-            $handle = fopen($path, 'rb');
+        $result = $importer->import($path);
 
-            if ($handle === false) {
-                throw new RuntimeException("No se pudo abrir {$path}");
-            }
-
-            $header = fgetcsv($handle, escape: '');
-            $total = 0;
-            $batch = [];
-            $now = now();
-
-            while (($row = fgetcsv($handle, escape: '')) !== false) {
-                if ($header === false || count($row) < 2 || trim((string) $row[0]) === '') {
-                    continue;
-                }
-
-                $batch[] = [
-                    'code' => strtoupper(trim((string) $row[0])),
-                    'description' => trim((string) $row[1]),
-                    'chapter' => isset($row[2]) && trim((string) $row[2]) !== '' ? trim((string) $row[2]) : null,
-                    'is_active' => true,
-                    'created_at' => $now,
-                    'updated_at' => $now,
-                ];
-
-                if (count($batch) === self::CHUNK) {
-                    $total += $this->flush($batch);
-                    $batch = [];
-                }
-            }
-
-            $total += $this->flush($batch);
-            fclose($handle);
-
-            $this->command->info("CIE-10: {$total} códigos importados/actualizados.");
-        } catch (Throwable $e) {
-            Log::error('Falló la importación del catálogo CIE-10.', ['error' => $e->getMessage()]);
-
-            throw $e;
-        }
-    }
-
-    /**
-     * @param  list<array<string, mixed>>  $rows
-     */
-    private function flush(array $rows): int
-    {
-        if ($rows === []) {
-            return 0;
-        }
-
-        DB::table('cie10_codes')->upsert($rows, ['code'], ['description', 'chapter', 'updated_at']);
-
-        return count($rows);
+        $this->command->info("CIE-10: {$result['imported']} códigos importados/actualizados.");
     }
 }

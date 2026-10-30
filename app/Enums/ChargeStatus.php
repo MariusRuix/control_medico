@@ -10,4 +10,14 @@ enum ChargeStatus: string
     case Partial = 'parcial';
     case Paid = 'pagado';
     case Cancelled = 'cancelado';
+
+    public function label(): string
+    {
+        return match ($this) {
+            self::Pending => 'Pendiente',
+            self::Partial => 'Abono parcial',
+            self::Paid => 'Pagado',
+            self::Cancelled => 'Cancelado',
+        };
+    }
 }

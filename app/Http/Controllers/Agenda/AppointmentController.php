@@ -15,6 +15,7 @@ use App\Models\Appointment;
 use App\Models\Service;
 use App\Models\User;
 use App\Services\Agenda\AppointmentService;
+use App\Services\Billing\BillingOptions;
 use App\Services\Agenda\AvailabilityService;
 use App\Services\Agenda\CalendarQuery;
 use Illuminate\Http\JsonResponse;
@@ -26,7 +27,7 @@ class AppointmentController extends Controller
 {
     public function __construct(private readonly AppointmentService $appointments) {}
 
-    public function index(CalendarRequest $request, CalendarQuery $calendar): Response
+    public function index(CalendarRequest $request, CalendarQuery $calendar, BillingOptions $billing): Response
     {
         /** @var User $user */
         $user = $request->user();
@@ -38,6 +39,7 @@ class AppointmentController extends Controller
                 ->orderBy('name')
                 ->get(['id', 'name', 'duration_minutes', 'color']),
             'statuses' => AppointmentStatus::definitions(),
+            'billing' => $user->can(Permission::ChargesManage->value) ? $billing->toArray() : null,
             'can' => [
                 'manage' => $user->can(Permission::AppointmentsManage->value),
                 'manageBlocks' => $user->can(Permission::SettingsManage->value),

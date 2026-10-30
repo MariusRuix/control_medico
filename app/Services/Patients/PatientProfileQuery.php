@@ -13,6 +13,7 @@ use App\Models\Consultation;
 use App\Models\ConsultationDiagnosis;
 use App\Models\Patient;
 use App\Models\User;
+use App\Services\Billing\BillingQuery;
 
 /**
  * Arma los datos de la vista de detalle del paciente según los permisos
@@ -21,6 +22,8 @@ use App\Models\User;
 final class PatientProfileQuery
 {
     private const int RECENT_LIMIT = 20;
+
+    public function __construct(private readonly BillingQuery $billing) {}
 
     /**
      * @return array<string, mixed>
@@ -35,6 +38,7 @@ final class PatientProfileQuery
             'consultations' => $canSeeClinical ? $this->consultations($patient) : null,
             'appointments' => $user->can(Permission::AppointmentsView->value) ? $this->appointments($patient) : null,
             'balance' => $user->can(Permission::ChargesView->value) ? $this->balance($patient) : null,
+            'charges' => $user->can(Permission::ChargesView->value) ? $this->billing->patientCharges($patient->id) : null,
             'files' => $user->can(Permission::MedicalFilesView->value) || $user->can(Permission::MedicalFilesUpload->value)
                 ? $this->files($patient)
                 : null,

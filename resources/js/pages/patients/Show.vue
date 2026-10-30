@@ -1,8 +1,17 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import { Form, Head, Link } from '@inertiajs/vue3';
-import { Archive, Pencil, Stethoscope, TriangleAlert } from '@lucide/vue';
+import {
+    Archive,
+    Pencil,
+    Stethoscope,
+    TriangleAlert,
+    Wallet,
+} from '@lucide/vue';
 import ConsultationController from '@/actions/App/Http/Controllers/Clinical/ConsultationController';
 import PatientController from '@/actions/App/Http/Controllers/Patients/PatientController';
+import ChargeDialog from '@/components/billing/ChargeDialog.vue';
+import ChargesList from '@/components/billing/ChargesList.vue';
 import MedicalFilesPanel from '@/components/files/MedicalFilesPanel.vue';
 import PatientHistories from '@/components/patients/PatientHistories.vue';
 import { Badge } from '@/components/ui/badge';
@@ -26,6 +35,8 @@ import {
 import { edit, index } from '@/routes/patients';
 import type {
     AppointmentSummary,
+    BillingOptions,
+    ChargeSummary,
     ConsultationSummary,
     MedicalFileItem,
     Patient,
@@ -42,6 +53,8 @@ const props = defineProps<{
     balance: string | null;
     historyTypes: SelectOption[];
     fileTypes: SelectOption[];
+    charges: ChargeSummary[] | null;
+    billing: BillingOptions | null;
     files: MedicalFileItem[] | null;
     can: {
         update: boolean;
@@ -59,6 +72,8 @@ defineOptions({
         breadcrumbs: [{ title: 'Pacientes', href: index() }],
     },
 });
+
+const chargeOpen = ref(false);
 
 const identification: { label: string; value: () => string | null }[] = [
     {
@@ -338,6 +353,29 @@ const identification: { label: string; value: () => string | null }[] = [
                     :can-delete="can.deleteFiles"
                 />
 
+                <!-- Cobros -->
+                <section
+                    v-if="charges !== null"
+                    class="space-y-3 rounded-xl border p-5"
+                >
+                    <div class="flex items-center justify-between gap-2">
+                        <h2 class="text-base font-medium">Cobros</h2>
+                        <Button
+                            v-if="billing"
+                            size="sm"
+                            variant="outline"
+                            @click="chargeOpen = true"
+                        >
+                            <Wallet /> Nuevo cobro
+                        </Button>
+                    </div>
+                    <ChargesList
+                        :charges="charges"
+                        :billing="billing"
+                        empty-text="Sin cobros registrados."
+                    />
+                </section>
+
                 <!-- Citas -->
                 <section
                     v-if="appointments !== null"
@@ -383,4 +421,16 @@ const identification: { label: string; value: () => string | null }[] = [
             </div>
         </div>
     </div>
+    <ChargeDialog
+        v-if="billing"
+        v-model:open="chargeOpen"
+        :billing="billing"
+        :patient="{
+            id: patient.id,
+            folio: patient.folio,
+            full_name: patient.full_name,
+            phone: patient.phone,
+            age: patient.age,
+        }"
+    />
 </template>

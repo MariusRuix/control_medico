@@ -123,3 +123,15 @@ Código: `app/Services/Prescriptions`, `app/Http/Controllers/Clinical/Prescripti
 - Nuevo permiso `medical-files.delete`: ejecuta `php artisan db:seed --class=RolesAndPermissionsSeeder`.
 
 Código: `app/Services/MedicalFiles`, `app/Http/Controllers/MedicalFiles`, `app/Http/Requests/MedicalFiles`, `resources/js/components/files`. Pruebas: `tests/Feature/MedicalFiles`.
+
+### Caja y cobros (`/cash`)
+
+- **Apertura de caja** con fondo inicial; solo puede haber una caja abierta. Los pagos siempre se registran en la caja abierta.
+- **Cobros** con uno o varios conceptos (servicios del catálogo o conceptos libres), cantidad, precio y descuento; el total se recalcula en el servidor (en centavos, sin errores de redondeo).
+- Cobrar en el momento (efectivo con cálculo de cambio, transferencia o tarjeta con referencia) o dejarlo como **adeudo**. Abonos parciales hasta liquidar.
+- Accesos directos: "Nuevo cobro" en Caja, en el expediente del paciente y "Registrar cobro" desde la cita en la agenda (precarga el servicio).
+- **Corte de caja**: totales por método, efectivo esperado (fondo + efectivo cobrado) contra contado, faltante o sobrante y notas. Reporte imprimible e historial de cortes.
+- Correcciones con motivo (bitácora): cancelar un cobro sin pagos y cancelar un pago mientras su caja siga abierta (los cortes cerrados no se alteran).
+- Permisos: recepción y médico (`charges.view`, `charges.manage`, `cash-register.manage`).
+
+Código: `app/Services/Billing`, `app/Http/Controllers/Billing`, `app/Http/Requests/Billing`, `app/Support/Money.php`, `resources/js/pages/cash`, `resources/js/components/billing`. Pruebas: `tests/Feature/Billing`.

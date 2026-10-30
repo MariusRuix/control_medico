@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link, router } from '@inertiajs/vue3';
-import { CalendarClock, Phone, Stethoscope } from '@lucide/vue';
+import { CalendarClock, Phone, Stethoscope, Wallet } from '@lucide/vue';
 import { computed, ref, watch } from 'vue';
 import AppointmentController from '@/actions/App/Http/Controllers/Agenda/AppointmentController';
 import ConsultationController from '@/actions/App/Http/Controllers/Clinical/ConsultationController';
@@ -37,9 +37,13 @@ const props = defineProps<{
     canManage: boolean;
     canViewPatients: boolean;
     canConsult: boolean;
+    canCharge: boolean;
 }>();
 
-const emit = defineEmits<{ edit: [appointment: CalendarAppointment] }>();
+const emit = defineEmits<{
+    edit: [appointment: CalendarAppointment];
+    charge: [appointment: CalendarAppointment];
+}>();
 
 const cancelling = ref(false);
 const cancelReason = ref('');
@@ -219,6 +223,19 @@ function changeStatus(value: string): void {
                     <Stethoscope /> Iniciar consulta
                 </Button>
             </div>
+
+            <Button
+                v-if="
+                    canCharge &&
+                    appointment.patient &&
+                    appointment.status !== 'cancelada'
+                "
+                variant="outline"
+                class="w-full"
+                @click="emit('charge', appointment)"
+            >
+                <Wallet /> Registrar cobro
+            </Button>
 
             <template v-if="canManage && !isFinal">
                 <div v-if="cancelling" class="space-y-2 rounded-lg border p-3">

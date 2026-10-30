@@ -5,3 +5,4 @@ export * from './patients';
 export * from './agenda';
 export * from './clinical';
 export * from './files';
+export * from './billing';

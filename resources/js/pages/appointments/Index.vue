@@ -3,6 +3,7 @@ import { Head, router } from '@inertiajs/vue3';
 import { Ban, ChevronLeft, ChevronRight, Plus } from '@lucide/vue';
 import { computed, ref } from 'vue';
 import AppointmentDetailsDialog from '@/components/agenda/AppointmentDetailsDialog.vue';
+import ChargeDialog from '@/components/billing/ChargeDialog.vue';
 import AppointmentFormDialog from '@/components/agenda/AppointmentFormDialog.vue';
 import MonthGrid from '@/components/agenda/MonthGrid.vue';
 import ScheduleBlockDialog from '@/components/agenda/ScheduleBlockDialog.vue';
@@ -21,9 +22,11 @@ import { index } from '@/routes/appointments';
 import type {
     AgendaService,
     AppointmentStatusDefinition,
+    BillingOptions,
     CalendarAppointment,
     CalendarBlock,
     CalendarView,
+    ChargePatient,
     WorkingHours,
 } from '@/types';
 
@@ -44,6 +47,7 @@ const props = defineProps<{
         viewPatients: boolean;
         consult: boolean;
     };
+    billing: BillingOptions | null;
 }>();
 
 defineOptions({
@@ -142,6 +146,22 @@ function openEdit(appointment: CalendarAppointment): void {
     detailsOpen.value = false;
     editing.value = appointment;
     formOpen.value = true;
+}
+
+// Cobro desde la cita
+const chargeOpen = ref(false);
+const chargePatient = ref<ChargePatient | null>(null);
+const chargeServiceId = ref<number | null>(null);
+
+function openCharge(appointment: CalendarAppointment): void {
+    if (!appointment.patient) {
+        return;
+    }
+
+    detailsOpen.value = false;
+    chargePatient.value = { ...appointment.patient, age: null };
+    chargeServiceId.value = appointment.service?.id ?? null;
+    chargeOpen.value = true;
 }
 
 function openBlock(block: CalendarBlock | null): void {
@@ -282,12 +302,21 @@ function openBlock(block: CalendarBlock | null): void {
         :can-manage="can.manage"
         :can-view-patients="can.viewPatients"
         :can-consult="can.consult"
+        :can-charge="billing !== null"
         @edit="openEdit"
+        @charge="openCharge"
     />
     <ScheduleBlockDialog
         v-model:open="blockOpen"
         :block="selectedBlock"
         :date="date < today ? today : date"
         :can-manage="can.manageBlocks"
+    />
+    <ChargeDialog
+        v-if="billing"
+        v-model:open="chargeOpen"
+        :billing="billing"
+        :patient="chargePatient"
+        :initial-service-id="chargeServiceId"
     />
 </template>

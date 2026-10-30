@@ -17,6 +17,7 @@ use App\Http\Resources\PatientResource;
 use App\Models\Patient;
 use App\Models\User;
 use App\Services\AuditLogger;
+use App\Services\Billing\BillingOptions;
 use App\Services\Patients\PatientProfileQuery;
 use App\Services\Patients\PatientService;
 use Illuminate\Http\RedirectResponse;
@@ -69,7 +70,7 @@ class PatientController extends Controller
         return to_route('patients.show', $patient);
     }
 
-    public function show(Request $request, Patient $patient, PatientProfileQuery $profile): Response
+    public function show(Request $request, Patient $patient, PatientProfileQuery $profile, BillingOptions $billing): Response
     {
         /** @var User $user */
         $user = $request->user();
@@ -81,6 +82,7 @@ class PatientController extends Controller
             ...$profile->forUser($patient, $user),
             'historyTypes' => PatientHistoryType::options(),
             'fileTypes' => MedicalFileType::options(),
+            'billing' => $user->can(Permission::ChargesManage->value) ? $billing->toArray() : null,
             'can' => [
                 'update' => $user->can(Permission::PatientsManage->value),
                 'delete' => $user->can(Permission::PatientsDelete->value),

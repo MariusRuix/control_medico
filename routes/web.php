@@ -1,11 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
-Route::inertia('/', 'Welcome')->name('home');
+// Sistema interno: la raíz lleva directo a Inicio (o al login si no hay sesión).
+Route::redirect('/', '/dashboard')->name('home');
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::inertia('dashboard', 'Dashboard')->name('dashboard');
+Route::middleware(['auth', 'verified'])->group(function (): void {
+    Route::get('dashboard', DashboardController::class)->name('dashboard');
 });
 
 require __DIR__.'/settings.php';

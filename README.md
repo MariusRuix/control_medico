@@ -135,3 +135,12 @@ Código: `app/Services/MedicalFiles`, `app/Http/Controllers/MedicalFiles`, `app/
 - Permisos: recepción y médico (`charges.view`, `charges.manage`, `cash-register.manage`).
 
 Código: `app/Services/Billing`, `app/Http/Controllers/Billing`, `app/Http/Requests/Billing`, `app/Support/Money.php`, `resources/js/pages/cash`, `resources/js/components/billing`. Pruebas: `tests/Feature/Billing`.
+
+### Inicio (`/dashboard`)
+
+- La raíz del sitio lleva directo a Inicio (o al inicio de sesión).
+- Indicadores del día: citas (y de mañana), por atender, en consultorio, atendidas, no asistieron; para quien maneja caja, lo cobrado hoy, estado de la caja y total de adeudos.
+- Citas de hoy con acciones rápidas según el rol: confirmar, pasar a consultorio (recepción), iniciar o continuar la consulta (médico) y cobrar las citas finalizadas. La próxima cita por atender se resalta.
+- Notas sin firmar (solo médico) para retomarlas con un clic, y aviso si faltan los datos del consultorio para emitir recetas.
+
+Código: `app/Http/Controllers/DashboardController.php`, `app/Services/Dashboard/DashboardQuery.php`, `resources/js/pages/Dashboard.vue`. Pruebas: `tests/Feature/HomeDashboardTest.php`.

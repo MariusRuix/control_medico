@@ -173,3 +173,14 @@ Código: `app/Models/ConsultationAddendum.php`, `app/Services/Clinical/AddendumS
 - Requiere el programador de tareas de Laravel (cada 15 minutos). En Laragon, deja corriendo `php artisan schedule:work`, o crea una tarea en el Programador de tareas de Windows que ejecute `php artisan schedule:run` cada minuto. Envío manual: `php artisan appointments:send-reminders`.
 
 Código: `app/Services/Reminders`, `app/Mail/AppointmentReminderMail.php`, `app/Console/Commands/SendAppointmentReminders.php`, `app/Http/Controllers/Agenda/AppointmentReminderController.php`, `app/Http/Controllers/Settings/ReminderSettingsController.php`, `resources/js/pages/settings/Reminders.vue`. Pruebas: `tests/Feature/Agenda/ReminderTest.php`.
+
+### Usuarios (`/settings/users`)
+
+- **Configuración → Usuarios** (solo el médico, `users.manage`; pide confirmar la contraseña): alta con rol Médico o Recepción, edición de nombre, correo y rol, restablecer contraseña y desactivar o reactivar.
+- Si no se indica contraseña, se genera una temporal fácil de dictar (p. ej. `gsMv-7r4j-Kwkz`) que se muestra **una sola vez**; no se guarda en la bitácora ni en el historial del navegador.
+- Al restablecer se puede quitar la verificación en dos pasos y las llaves de acceso (teléfono perdido).
+- Las cuentas **no se borran** (se quitó "Eliminar cuenta" del perfil): se desactivan. Al desactivar se cierran sus sesiones y el middleware `EnsureUserIsActive` expulsa cualquier sesión que siga abierta.
+- Reglas: nadie cambia su propio rol ni se desactiva a sí mismo, y siempre queda al menos un médico activo.
+- Todo queda en la bitácora (`created`, `updated`, `activated`, `deactivated`, `password_reset`).
+
+Código: `app/Services/Users`, `app/Http/Controllers/Users/UserController.php`, `app/Http/Requests/Users`, `app/Http/Middleware/EnsureUserIsActive.php`, `routes/users.php`, `resources/js/pages/settings/Users.vue`. Pruebas: `tests/Feature/Users`.

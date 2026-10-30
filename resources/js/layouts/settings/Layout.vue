@@ -13,6 +13,7 @@ import { edit as editSecurity } from '@/routes/security';
 import { edit as editClinic } from '@/routes/settings/clinic';
 import { edit as editReminders } from '@/routes/settings/reminders';
 import { edit as editSchedule } from '@/routes/settings/schedule';
+import { index as usersIndex } from '@/routes/settings/users';
 import type { NavItem } from '@/types';
 
 const { can } = usePermissions();
@@ -28,6 +29,7 @@ const sidebarNavItems = computed<NavItem[]>(() => [
               { title: 'Recordatorios', href: editReminders() },
           ]
         : []),
+    ...(can('users.manage') ? [{ title: 'Usuarios', href: usersIndex() }] : []),
 ]);
 
 const { isCurrentOrParentUrl } = useCurrentUrl();

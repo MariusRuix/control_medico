@@ -184,3 +184,14 @@ Código: `app/Services/Reminders`, `app/Mail/AppointmentReminderMail.php`, `app/
 - Todo queda en la bitácora (`created`, `updated`, `activated`, `deactivated`, `password_reset`).
 
 Código: `app/Services/Users`, `app/Http/Controllers/Users/UserController.php`, `app/Http/Requests/Users`, `app/Http/Middleware/EnsureUserIsActive.php`, `routes/users.php`, `resources/js/pages/settings/Users.vue`. Pruebas: `tests/Feature/Users`.
+
+### Bitácora (`/audit-logs`)
+
+- Menú **Bitácora** (solo el médico, `audit-logs.view`) y botón **Bitácora** en el expediente de cada paciente.
+- Filtros por paciente, usuario, acción, tipo de registro y periodo (atajos: hoy, 7 y 30 días). Cada fila se expande para ver los campos que cambiaron (antes / después) y el equipo desde el que se hizo.
+- Registra altas, cambios, bajas, lecturas del expediente, descargas, anulaciones, envíos por correo, cambios de cuentas, y además **inicios y cierres de sesión e intentos fallidos**.
+- Cada registro guarda el paciente al que pertenece (`audit_logs.patient_id`); la migración completa los registros anteriores.
+- **Exportar CSV** con los filtros actuales (se abre en Excel); la exportación también queda en la bitácora.
+- Los registros no se pueden modificar ni borrar desde la aplicación, y los valores cifrados aparecen como `[protegido]`.
+
+Código: `app/Services/Audit`, `app/Services/AuditLogger.php`, `app/Listeners/LogAuthenticationEvents.php`, `app/Http/Controllers/Audit/AuditLogController.php`, `resources/js/pages/audit/Index.vue`. Migración: `2026_10_31_000001_add_patient_id_to_audit_logs_table`. Pruebas: `tests/Feature/Audit`.

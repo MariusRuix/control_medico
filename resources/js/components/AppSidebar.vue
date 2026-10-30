@@ -1,6 +1,13 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, CalendarDays, LayoutGrid, Users, Wallet } from '@lucide/vue';
+import {
+    BookOpen,
+    CalendarDays,
+    LayoutGrid,
+    ScrollText,
+    Users,
+    Wallet,
+} from '@lucide/vue';
 import { computed } from 'vue';
 import AppLogo from '@/components/AppLogo.vue';
 import NavMain from '@/components/NavMain.vue';
@@ -17,6 +24,7 @@ import {
 import { usePermissions } from '@/composables/usePermissions';
 import { dashboard } from '@/routes';
 import { index as appointmentsIndex } from '@/routes/appointments';
+import { index as auditIndex } from '@/routes/audit-logs';
 import { index as cashIndex } from '@/routes/cash';
 import { index as catalogsIndex } from '@/routes/catalogs/vademecum';
 import { index as patientsIndex } from '@/routes/patients';
@@ -49,6 +57,12 @@ const navigation: (NavItem & { permission?: string })[] = [
         href: catalogsIndex(),
         icon: BookOpen,
         permission: 'catalogs.manage',
+    },
+    {
+        title: 'Bitácora',
+        href: auditIndex(),
+        icon: ScrollText,
+        permission: 'audit-logs.view',
     },
 ];
 

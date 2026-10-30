@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { Form, Head, Link } from '@inertiajs/vue3';
 import {
     Archive,
+    History,
     Pencil,
     Stethoscope,
     TriangleAlert,
@@ -26,12 +27,14 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
+import { usePermissions } from '@/composables/usePermissions';
 import { statusBadgeClasses } from '@/lib/agenda';
 import { formatCurrency, formatDate, formatDateTime } from '@/lib/format';
 import {
     edit as consultationEdit,
     show as consultationShow,
 } from '@/routes/consultations';
+import { index as auditIndex } from '@/routes/audit-logs';
 import { edit, index } from '@/routes/patients';
 import type {
     AppointmentSummary,
@@ -66,6 +69,8 @@ const props = defineProps<{
         deleteFiles: boolean;
     };
 }>();
+
+const { can: canAudit } = usePermissions();
 
 defineOptions({
     layout: {
@@ -135,6 +140,15 @@ const identification: { label: string; value: () => string | null }[] = [
                 <Button v-if="can.update" variant="outline" as-child>
                     <Link :href="edit(patient.id)"
                         ><Pencil /> Editar ficha</Link
+                    >
+                </Button>
+                <Button
+                    v-if="canAudit('audit-logs.view')"
+                    variant="ghost"
+                    as-child
+                >
+                    <Link :href="auditIndex({ query: { patient: patient.id } })"
+                        ><History /> Bitácora</Link
                     >
                 </Button>
                 <Dialog v-if="can.delete">

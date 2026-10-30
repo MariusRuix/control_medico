@@ -5,8 +5,14 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\AuditLog;
+use App\Models\ConsultationAddendum;
+use App\Models\Patient;
+use App\Models\Payment;
+use App\Models\Prescription;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Str;
@@ -25,15 +31,17 @@ final class AuditLogger
     /**
      * @param  array<string, mixed>  $oldValues
      * @param  array<string, mixed>  $newValues
+     * @param  User|null  $actor  quién hizo la acción cuando aún no hay sesión (p. ej. al iniciar sesión)
      */
-    public function log(string $action, ?Model $model = null, array $oldValues = [], array $newValues = []): void
+    public function log(string $action, ?Model $model = null, array $oldValues = [], array $newValues = [], ?User $actor = null): void
     {
         try {
             AuditLog::query()->create([
-                'user_id' => Auth::id(),
+                'user_id' => $actor?->getKey() ?? Auth::id(),
                 'action' => $action,
                 'auditable_type' => $model?->getMorphClass(),
                 'auditable_id' => $model?->getKey(),
+                'patient_id' => $this->patientIdFor($model),
                 'old_values' => $model !== null ? $this->sanitize($model, $oldValues) : $oldValues,
                 'new_values' => $model !== null ? $this->sanitize($model, $newValues) : $newValues,
                 'ip_address' => Request::ip(),
@@ -56,6 +64,30 @@ final class AuditLogger
     public function viewed(Model $model): void
     {
         $this->log('viewed', $model);
+    }
+
+    /**
+     * Paciente al que pertenece el registro, para filtrar la bitácora por expediente.
+     */
+    private function patientIdFor(?Model $model): ?int
+    {
+        if ($model === null) {
+            return null;
+        }
+
+        $id = match (true) {
+            $model instanceof Patient => $model->getKey(),
+            $model instanceof Prescription, $model instanceof ConsultationAddendum => DB::table('consultations')
+                ->where('id', $model->getAttribute('consultation_id'))
+                ->value('patient_id'),
+            $model instanceof Payment => DB::table('charges')
+                ->where('id', $model->getAttribute('charge_id'))
+                ->value('patient_id'),
+            array_key_exists('patient_id', $model->getAttributes()) => $model->getAttribute('patient_id'),
+            default => null,
+        };
+
+        return is_numeric($id) ? (int) $id : null;
     }
 
     /**
